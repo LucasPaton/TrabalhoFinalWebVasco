@@ -7,6 +7,7 @@ use App\Models\TreinoModel;
 use App\Models\ExercicioModel;
 use App\Models\ComentarioModel;
 use App\Models\UsuarioModel;
+use App\Models\AmizadeModel;
 
 /**
  * Controller responsável pela criação, visualização e comparação de treinos.
@@ -58,7 +59,7 @@ class TreinoController {
 
         if (empty($titulo) || empty($grupo_muscular)) {
             Session::setFlash('danger', 'Título do treino e Grupo Muscular são obrigatórios.');
-            header("Location: /treino/criar");
+            header("Location: " . BASE_PATH . "/treino/criar");
             exit();
         }
 
@@ -95,14 +96,14 @@ class TreinoController {
 
             if ($treino_id) {
                 Session::setFlash('success', 'Treino criado e publicado com sucesso!');
-                header("Location: /feed");
+                header("Location: " . BASE_PATH . "/feed");
                 exit();
             }
         } catch (\Exception $e) {
             Session::setFlash('danger', 'Erro ao salvar o treino: ' . $e->getMessage());
         }
 
-        header("Location: /treino/criar");
+        header("Location: " . BASE_PATH . "/treino/criar");
         exit();
     }
 
@@ -125,7 +126,7 @@ class TreinoController {
 
         if (!$treino) {
             Session::setFlash('danger', 'Treino não encontrado.');
-            header("Location: /feed");
+            header("Location: " . BASE_PATH . "/feed");
             exit();
         }
 
@@ -158,7 +159,7 @@ class TreinoController {
             Session::setFlash('danger', 'Não foi possível excluir o treino.');
         }
 
-        header("Location: /perfil");
+        header("Location: " . BASE_PATH . "/perfil");
         exit();
     }
 
@@ -193,7 +194,7 @@ class TreinoController {
 
         if (empty($texto)) {
             Session::setFlash('danger', 'O comentário não pode estar vazio.');
-            header("Location: /treino/" . $treino_id);
+            header("Location: " . BASE_PATH . "/treino/" . $treino_id);
             exit();
         }
 
@@ -206,7 +207,7 @@ class TreinoController {
             Session::setFlash('danger', 'Erro ao enviar comentário.');
         }
 
-        header("Location: /treino/" . $treino_id);
+        header("Location: " . BASE_PATH . "/treino/" . $treino_id);
         exit();
     }
 
@@ -225,10 +226,10 @@ class TreinoController {
 
         if ($novo_id) {
             Session::setFlash('success', 'Treino copiado com sucesso para a sua ficha!');
-            header("Location: /treino/" . $novo_id);
+            header("Location: " . BASE_PATH . "/treino/" . $novo_id);
         } else {
             Session::setFlash('danger', 'Houve um erro ao copiar o treino.');
-            header("Location: /feed");
+            header("Location: " . BASE_PATH . "/feed");
         }
         exit();
     }

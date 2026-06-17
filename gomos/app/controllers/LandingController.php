@@ -16,7 +16,7 @@ class LandingController {
     public function index() {
         // Se já estiver logado, redireciona direto para o feed
         if (Session::has('usuario_id')) {
-            header("Location: /feed");
+            header("Location: " . BASE_PATH . "/feed");
             exit();
         }
 

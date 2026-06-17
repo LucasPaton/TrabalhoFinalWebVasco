@@ -153,33 +153,149 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     transform: translateY(-3px);
 }
 
-/* Formulários */
-.form-control-gomos {
+/* ==============================================================
+   FORMULÁRIOS — VISIBILIDADE FORÇADA NO TEMA ESCURO
+   Seletores com alta especificidade para sobrescrever Bootstrap
+   e jQuery UI definitivamente.
+   ============================================================== */
+
+/* Fundo e texto dos campos de input, textarea e select */
+body input:not([type="submit"]):not([type="button"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+body textarea,
+body select,
+body .form-control,
+body .form-select,
+body .form-control-gomos,
+body .form-select-gomos {
     background-color: #242424 !important;
     border: 1px solid var(--border-color) !important;
-    color: var(--text-primary) !important;
+    color: #FFFFFF !important;
     border-radius: 4px !important;
     padding: 12px 16px !important;
     transition: all 0.3s ease !important;
 }
 
-.form-control-gomos:focus {
-    border-color: var(--accent-primary) !important;
-    box-shadow: 0 0 0 0.25rem rgba(255, 107, 0, 0.25) !important;
+/* Estado de foco */
+body input:not([type="submit"]):not([type="button"]):not([type="file"]):not([type="checkbox"]):not([type="radio"]):focus,
+body textarea:focus,
+body select:focus,
+body .form-control:focus,
+body .form-select:focus,
+body .form-control-gomos:focus,
+body .form-select-gomos:focus {
     background-color: #2D2D2D !important;
-}
-
-.form-select-gomos {
-    background-color: #242424 !important;
-    border: 1px solid var(--border-color) !important;
-    color: var(--text-primary) !important;
-    border-radius: 4px !important;
-    padding: 12px 16px !important;
-}
-
-.form-select-gomos:focus {
+    color: #FFFFFF !important;
     border-color: var(--accent-primary) !important;
     box-shadow: 0 0 0 0.25rem rgba(255, 107, 0, 0.25) !important;
+}
+
+/* ---- PLACEHOLDERS — TODOS os seletores cross-browser ---- */
+/* Cada regra de pseudo-elemento DEVE estar sozinha para não invalidar o grupo */
+
+body input::placeholder,
+body .form-control::placeholder,
+body .form-control-gomos::placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+body textarea::placeholder,
+body .form-control.textarea::placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+body input::-webkit-input-placeholder,
+body .form-control::-webkit-input-placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+body textarea::-webkit-input-placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+body input::-moz-placeholder,
+body .form-control::-moz-placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+body textarea::-moz-placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+body input:-ms-input-placeholder,
+body .form-control:-ms-input-placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+body textarea:-ms-input-placeholder {
+    color: rgba(255, 255, 255, 0.65) !important;
+    opacity: 1 !important;
+}
+
+/* ---- INPUT-GROUP-TEXT (o @, ícones de cadeado, lupa etc.) ---- */
+body .input-group-text,
+body .input-group .input-group-text,
+.input-group-text.bg-dark.border-secondary.text-secondary {
+    color: rgba(255, 255, 255, 0.85) !important;
+    background-color: #2a2a2a !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ---- LABELS de formulários ---- */
+body label,
+body .form-label,
+body .form-check-label {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* ---- Textos de ajuda e muted ---- */
+body .form-text,
+body small.text-muted,
+body .text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* text-secondary visível no tema escuro */
+body .text-secondary {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Select options */
+body select option {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+/* jQuery UI Autocomplete - correção de visibilidade */
+.ui-widget,
+.ui-widget input,
+.ui-widget select,
+.ui-widget textarea,
+.ui-widget button {
+    color: #FFFFFF !important;
+}
+
+.ui-autocomplete {
+    background-color: #1A1A1A !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.ui-menu-item-wrapper {
+    color: #FFFFFF !important;
+    padding: 8px 12px !important;
+}
+
+.ui-menu-item-wrapper.ui-state-active,
+.ui-state-active .ui-menu-item-wrapper {
+    background-color: var(--accent-primary) !important;
+    color: #0D0D0D !important;
+    border: none !important;
 }
 
 /* Toasts de Notificação customizados */
@@ -223,14 +339,148 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 }
 
 /* Modais dark */
-.modal-content-gomos {
+.modal-content-gomos,
+body .modal-content {
     background-color: var(--bg-card) !important;
     border: 1px solid var(--border-color) !important;
     color: var(--text-primary) !important;
 }
-.modal-header-gomos {
+.modal-header-gomos,
+body .modal-header {
     border-bottom: 1px solid var(--border-color) !important;
 }
-.modal-footer-gomos {
+.modal-footer-gomos,
+body .modal-footer {
     border-top: 1px solid var(--border-color) !important;
+}
+
+/* ---- BUSCA DE USUÁRIOS ---- */
+.search-users-container {
+    position: relative;
+}
+
+.search-users-input {
+    background-color: #242424 !important;
+    border: 1px solid var(--border-color) !important;
+    color: #FFFFFF !important;
+    border-radius: 25px !important;
+    padding: 10px 20px 10px 42px !important;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.search-users-input:focus {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 107, 0, 0.2) !important;
+    background-color: #2D2D2D !important;
+}
+
+.search-users-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #1A1A1A;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-top: 6px;
+    max-height: 350px;
+    overflow-y: auto;
+    z-index: 1050;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    display: none;
+}
+
+.search-results-dropdown.show {
+    display: block;
+    animation: fadeInDown 0.2s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: rgba(255, 107, 0, 0.1);
+    color: var(--text-primary);
+}
+
+.search-result-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-primary);
+    margin-right: 14px;
+    flex-shrink: 0;
+}
+
+.search-result-info {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.search-result-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-username {
+    color: var(--accent-primary);
+    font-size: 0.82rem;
+}
+
+.search-result-location {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.78rem;
+}
+
+.search-no-results {
+    padding: 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+}
+
+.search-loading {
+    padding: 20px;
+    text-align: center;
+    color: var(--accent-primary);
 }

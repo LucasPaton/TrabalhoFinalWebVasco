@@ -128,19 +128,24 @@ class TreinoModel {
         $sql = "SELECT t.*, u.nome as nome_usuario, u.username, u.foto_perfil, u.nivel_fitness,
                 (SELECT COUNT(*) FROM curtidas WHERE treino_id = t.id) as total_curtidas,
                 (SELECT COUNT(*) FROM comentarios WHERE treino_id = t.id) as total_comentarios,
-                (SELECT COUNT(*) FROM curtidas WHERE treino_id = t.id AND usuario_id = :usuario_id) as curtiu
+                (SELECT COUNT(*) FROM curtidas WHERE treino_id = t.id AND usuario_id = :usuario_id_curtiu) as curtiu
                 FROM treinos t
                 INNER JOIN usuarios u ON t.usuario_id = u.id
-                WHERE t.usuario_id = :usuario_id
+                WHERE t.usuario_id = :usuario_id_dono
                    OR (t.publico = 1 AND t.usuario_id IN (
-                       SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id AND status = 'aceita'
+                       SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id_receptor AND status = 'aceita'
                        UNION
-                       SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id AND status = 'aceita'
+                       SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id_solicitante AND status = 'aceita'
                    ))
                 ORDER BY t.criado_em DESC";
         
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':usuario_id' => $usuario_id]);
+        $stmt->execute([
+            ':usuario_id_curtiu' => $usuario_id,
+            ':usuario_id_dono' => $usuario_id,
+            ':usuario_id_receptor' => $usuario_id,
+            ':usuario_id_solicitante' => $usuario_id
+        ]);
         return $stmt->fetchAll();
     }
 

@@ -74,7 +74,7 @@ class AcademiaController {
             Session::setFlash('danger', 'Erro ao vincular academia.');
         }
 
-        header("Location: /academias?id=" . $academia_id);
+        header("Location: " . BASE_PATH . "/academias?id=" . $academia_id);
         exit();
     }
 
@@ -91,7 +91,7 @@ class AcademiaController {
 
         if ($academia_id <= 0) {
             Session::setFlash('danger', 'Academia inválida para check-in.');
-            header("Location: /academias");
+            header("Location: " . BASE_PATH . "/academias");
             exit();
         }
 
@@ -104,7 +104,7 @@ class AcademiaController {
             Session::setFlash('danger', 'Houve um erro ao registrar seu check-in.');
         }
 
-        header("Location: /academias?id=" . $academia_id);
+        header("Location: " . BASE_PATH . "/academias?id=" . $academia_id);
         exit();
     }
 }

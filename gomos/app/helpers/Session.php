@@ -67,7 +67,7 @@ class Session {
         self::start();
         if (!isset($_SESSION['usuario_id'])) {
             self::setFlash('danger', 'Acesso restrito. Por favor, faça login para continuar.');
-            header("Location: /login");
+            header("Location: " . BASE_PATH . "/login");
             exit();
         }
         return true;
@@ -83,7 +83,7 @@ class Session {
         self::start();
         if (!isset($_SESSION['admin_id'])) {
             self::setFlash('danger', 'Acesso restrito a administradores.');
-            header("Location: /login"); // Pode ser redirecionado para login de admin ou login geral
+            header("Location: " . BASE_PATH . "/login"); // Pode ser redirecionado para login de admin ou login geral
             exit();
         }
         return true;

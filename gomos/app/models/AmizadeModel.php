@@ -39,13 +39,15 @@ class AmizadeModel {
     public function aceitarSolicitacao($solicitante_id, $receptor_id) {
         $sql = "UPDATE amizades 
                 SET status = 'aceita' 
-                WHERE (solicitante_id = :solicitante_id AND receptor_id = :receptor_id) 
-                   OR (solicitante_id = :receptor_id AND receptor_id = :solicitante_id)";
+                WHERE (solicitante_id = :solicitante_id1 AND receptor_id = :receptor_id1) 
+                   OR (solicitante_id = :receptor_id2 AND receptor_id = :solicitante_id2)";
         
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            ':solicitante_id' => $solicitante_id,
-            ':receptor_id' => $receptor_id
+            ':solicitante_id1' => $solicitante_id,
+            ':receptor_id1' => $receptor_id,
+            ':solicitante_id2' => $solicitante_id,
+            ':receptor_id2' => $receptor_id
         ]);
     }
 
@@ -54,13 +56,15 @@ class AmizadeModel {
      */
     public function recusarOuDesfazerAmizade($usuario1_id, $usuario2_id) {
         $sql = "DELETE FROM amizades 
-                WHERE (solicitante_id = :user1 AND receptor_id = :user2) 
-                   OR (solicitante_id = :user2 AND receptor_id = :user1)";
+                WHERE (solicitante_id = :user1_1 AND receptor_id = :user2_1) 
+                   OR (solicitante_id = :user2_2 AND receptor_id = :user1_2)";
         
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            ':user1' => $usuario1_id,
-            ':user2' => $usuario2_id
+            ':user1_1' => $usuario1_id,
+            ':user2_1' => $usuario2_id,
+            ':user1_2' => $usuario1_id,
+            ':user2_2' => $usuario2_id
         ]);
     }
 
@@ -70,13 +74,15 @@ class AmizadeModel {
      */
     public function verificarStatus($usuario1_id, $usuario2_id) {
         $sql = "SELECT * FROM amizades 
-                WHERE (solicitante_id = :user1 AND receptor_id = :user2) 
-                   OR (solicitante_id = :user2 AND receptor_id = :user1)";
+                WHERE (solicitante_id = :user1_1 AND receptor_id = :user2_1) 
+                   OR (solicitante_id = :user2_2 AND receptor_id = :user1_2)";
         
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':user1' => $usuario1_id,
-            ':user2' => $usuario2_id
+            ':user1_1' => $usuario1_id,
+            ':user2_1' => $usuario2_id,
+            ':user1_2' => $usuario1_id,
+            ':user2_2' => $usuario2_id
         ]);
         $amizade = $stmt->fetch();
 
@@ -103,14 +109,17 @@ class AmizadeModel {
         $sql = "SELECT u.id, u.nome, u.username, u.foto_perfil, u.cidade, u.estado, u.nivel_fitness, u.pontos_ranking 
                 FROM usuarios u 
                 WHERE u.id IN (
-                    SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id AND status = 'aceita'
+                    SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id_solicitante AND status = 'aceita'
                     UNION
-                    SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id AND status = 'aceita'
+                    SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id_receptor AND status = 'aceita'
                 ) AND u.ativo = 1 
                 ORDER BY u.nome ASC";
         
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':usuario_id' => $usuario_id]);
+        $stmt->execute([
+            ':usuario_id_solicitante' => $usuario_id,
+            ':usuario_id_receptor' => $usuario_id
+        ]);
         return $stmt->fetchAll();
     }
 
@@ -145,12 +154,12 @@ class AmizadeModel {
 
         $sql = "SELECT id, nome, username, foto_perfil, cidade, estado 
                 FROM usuarios 
-                WHERE id != :usuario_id 
+                WHERE id != :usuario_id_excluir 
                   AND ativo = 1 
                   AND id NOT IN (
-                      SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id
+                      SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id_solicitante
                       UNION
-                      SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id
+                      SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id_receptor
                   )
                 ORDER BY 
                   CASE WHEN academia_id = :academia_id THEN 1 ELSE 2 END,
@@ -159,7 +168,9 @@ class AmizadeModel {
                 LIMIT :limite";
         
         $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':usuario_id', $usuario_id, PDO::PARAM_INT);
+        $stmt->bindValue(':usuario_id_excluir', $usuario_id, PDO::PARAM_INT);
+        $stmt->bindValue(':usuario_id_solicitante', $usuario_id, PDO::PARAM_INT);
+        $stmt->bindValue(':usuario_id_receptor', $usuario_id, PDO::PARAM_INT);
         $stmt->bindValue(':academia_id', $academia_id, PDO::PARAM_INT);
         $stmt->bindValue(':cidade', $cidade, PDO::PARAM_STR);
         $stmt->bindValue(':limite', $limite, PDO::PARAM_INT);

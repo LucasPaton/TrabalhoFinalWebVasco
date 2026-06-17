@@ -36,15 +36,19 @@ class RankingModel {
     public function obterRankingAmigos($usuario_id) {
         $sql = "SELECT id, nome, username, foto_perfil, cidade, estado, pontos_ranking, total_treinos 
                 FROM usuarios 
-                WHERE (id = :usuario_id OR id IN (
-                    SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id AND status = 'aceita'
+                WHERE (id = :usuario_id_self OR id IN (
+                    SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id_solicitante AND status = 'aceita'
                     UNION
-                    SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id AND status = 'aceita'
+                    SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id_receptor AND status = 'aceita'
                 )) AND ativo = 1
                 ORDER BY pontos_ranking DESC, total_treinos DESC";
         
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([':usuario_id' => $usuario_id]);
+        $stmt->execute([
+            ':usuario_id_self' => $usuario_id,
+            ':usuario_id_solicitante' => $usuario_id,
+            ':usuario_id_receptor' => $usuario_id
+        ]);
         return $stmt->fetchAll();
     }
 
@@ -99,12 +103,16 @@ class RankingModel {
         // Conta quantos usuários ativos possuem mais pontos (ou mesmos pontos e ID menor/total de treinos maior)
         $sql_pos = "SELECT COUNT(*) + 1 as posicao 
                     FROM usuarios 
-                    WHERE (pontos_ranking > :pontos OR (pontos_ranking = :pontos AND total_treinos > (
+                    WHERE (pontos_ranking > :pontos_comparar OR (pontos_ranking = :pontos_iguais AND total_treinos > (
                         SELECT total_treinos FROM usuarios WHERE id = :id
                     ))) AND ativo = 1";
         
         $stmt_pos = $this->db->prepare($sql_pos);
-        $stmt_pos->execute([':pontos' => $pontos, ':id' => $usuario_id]);
+        $stmt_pos->execute([
+            ':pontos_comparar' => $pontos,
+            ':pontos_iguais' => $pontos,
+            ':id' => $usuario_id
+        ]);
         $pos = $stmt_pos->fetch();
         
         return $pos ? $pos['posicao'] : 0;

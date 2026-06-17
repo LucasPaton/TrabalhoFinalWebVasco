@@ -15,18 +15,24 @@ require_once __DIR__ . '/../partials/navbar.php';
                     <h2 class="text-white text-center mb-4"><span class="text-orange">G</span>OMOS — CADASTRO EM ETAPAS</h2>
                     
                     <!-- Indicador de Etapas -->
-                    <div class="d-flex justify-content-between mb-5 px-3">
-                        <div class="text-center step-indicator step-active" id="indicator-1">
-                            <span class="badge rounded-circle bg-orange text-dark p-3" style="font-size: 1rem; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">1</span>
-                            <div class="small text-white mt-2 d-none d-md-block">Conta</div>
+                    <div class="position-relative mb-5 px-4">
+                        <!-- Linha de progresso de fundo e de preenchimento ativo -->
+                        <div class="progress position-absolute start-50 translate-middle-x" style="height: 4px; width: 88%; background-color: #262626; z-index: 0; pointer-events: none; border-radius: 2px; border: none; top: 22px;">
+                            <div id="cadastro-progress-bar" class="progress-bar" role="progressbar" style="width: 0%; height: 100%; background-color: #FF6B00; transition: width 0.4s ease;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <div class="text-center step-indicator" id="indicator-2">
-                            <span class="badge rounded-circle bg-secondary text-dark p-3" style="font-size: 1rem; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">2</span>
-                            <div class="small text-muted mt-2 d-none d-md-block">Perfil Fitness</div>
-                        </div>
-                        <div class="text-center step-indicator" id="indicator-3">
-                            <span class="badge rounded-circle bg-secondary text-dark p-3" style="font-size: 1rem; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">3</span>
-                            <div class="small text-muted mt-2 d-none d-md-block">Academia</div>
+                        <div class="d-flex justify-content-between position-relative" style="z-index: 1;">
+                            <div class="text-center step-indicator step-active" id="indicator-1">
+                                <span class="badge rounded-circle text-dark p-3 d-inline-flex align-items-center justify-content-center" style="font-size: 1.1rem; width: 45px; height: 45px; background-color: #FF6B00; border: 3px solid #1A1A1A; transition: all 0.3s ease;">1</span>
+                                <div class="small text-white mt-2 d-none d-md-block fw-bold" style="transition: all 0.3s ease;">Conta</div>
+                            </div>
+                            <div class="text-center step-indicator" id="indicator-2">
+                                <span class="badge rounded-circle text-white p-3 d-inline-flex align-items-center justify-content-center" style="font-size: 1.1rem; width: 45px; height: 45px; background-color: #262626; border: 3px solid #1A1A1A; transition: all 0.3s ease;">2</span>
+                                <div class="small text-muted mt-2 d-none d-md-block" style="transition: all 0.3s ease;">Perfil Fitness</div>
+                            </div>
+                            <div class="text-center step-indicator" id="indicator-3">
+                                <span class="badge rounded-circle text-white p-3 d-inline-flex align-items-center justify-content-center" style="font-size: 1.1rem; width: 45px; height: 45px; background-color: #262626; border: 3px solid #1A1A1A; transition: all 0.3s ease;">3</span>
+                                <div class="small text-muted mt-2 d-none d-md-block" style="transition: all 0.3s ease;">Academia</div>
+                            </div>
                         </div>
                     </div>
 
@@ -40,8 +46,8 @@ require_once __DIR__ . '/../partials/navbar.php';
                             <!-- Nome Completo -->
                             <div class="mb-3">
                                 <label for="nome" class="form-label text-muted-gomos">Nome Completo *</label>
-                                <input type="text" name="nome" id="nome" class="form-control form-control-gomos" placeholder="Ex: Lucas Paton" required>
-                                <div class="invalid-feedback text-danger">Por favor, insira seu nome.</div>
+                                <input type="text" name="nome" id="nome" class="form-control form-control-gomos" placeholder="Ex: Lucas Paton" minlength="3" maxlength="60" pattern="^[a-zA-ZÀ-ÿ\s]+$" title="Apenas letras e espaços." required>
+                                <div class="invalid-feedback text-danger">O nome deve conter apenas letras (3 a 60 caracteres).</div>
                             </div>
 
                             <!-- Username -->
@@ -49,7 +55,7 @@ require_once __DIR__ . '/../partials/navbar.php';
                                 <label for="username" class="form-label text-muted-gomos">Nome de Usuário (Username) *</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-dark border-secondary text-secondary">@</span>
-                                    <input type="text" name="username" id="username" class="form-control form-control-gomos" placeholder="lucaspaton" required>
+                                    <input type="text" name="username" id="username" class="form-control form-control-gomos" placeholder="lucaspaton" minlength="3" maxlength="20" pattern="^[a-zA-Z0-9_\-\.]+$" title="Apenas letras, números, pontos, traços ou sublinhados (sem espaços)." required>
                                 </div>
                                 <div id="username-feedback" class="form-text mt-1"></div>
                             </div>
@@ -57,21 +63,21 @@ require_once __DIR__ . '/../partials/navbar.php';
                             <!-- E-mail -->
                             <div class="mb-3">
                                 <label for="email" class="form-label text-muted-gomos">Endereço de E-mail *</label>
-                                <input type="email" name="email" id="email" class="form-control form-control-gomos" placeholder="exemplo@email.com" required>
-                                <div class="invalid-feedback text-danger">Insira um e-mail válido.</div>
+                                <input type="email" name="email" id="email" class="form-control form-control-gomos" placeholder="exemplo@email.com" maxlength="100" required>
+                                <div class="invalid-feedback text-danger">Insira um e-mail válido (máximo 100 caracteres).</div>
                             </div>
 
                             <!-- Senha -->
                             <div class="mb-3">
-                                <label for="senha" class="form-label text-muted-gomos">Senha (Mínimo 6 caracteres) *</label>
-                                <input type="password" name="senha" id="senha" class="form-control form-control-gomos" placeholder="Sua senha secreta" required>
-                                <div class="invalid-feedback text-danger">A senha deve ter pelo menos 6 caracteres.</div>
+                                <label for="senha" class="form-label text-muted-gomos">Senha (6 a 32 caracteres) *</label>
+                                <input type="password" name="senha" id="senha" class="form-control form-control-gomos" placeholder="Sua senha secreta" minlength="6" maxlength="32" required>
+                                <div class="invalid-feedback text-danger">A senha deve ter entre 6 e 32 caracteres.</div>
                             </div>
 
                             <!-- Confirmar Senha -->
                             <div class="mb-4">
                                 <label for="confirmar_senha" class="form-label text-muted-gomos">Confirmar Senha *</label>
-                                <input type="password" name="confirmar_senha" id="confirmar_senha" class="form-control form-control-gomos" placeholder="Repita a senha" required>
+                                <input type="password" name="confirmar_senha" id="confirmar_senha" class="form-control form-control-gomos" placeholder="Repita a senha" minlength="6" maxlength="32" required>
                                 <div id="senha-confirm-feedback" class="form-text text-danger mt-1"></div>
                             </div>
 
@@ -105,7 +111,7 @@ require_once __DIR__ . '/../partials/navbar.php';
                             <div class="row mb-3">
                                 <div class="col-6">
                                     <label for="peso" class="form-label text-muted-gomos">Peso Atual (kg)</label>
-                                    <input type="number" name="peso" id="peso" class="form-control form-control-gomos" placeholder="Ex: 75.5" step="0.1">
+                                    <input type="number" name="peso" id="peso" class="form-control form-control-gomos" placeholder="Ex: 75.5" step="0.1" min="30" max="300">
                                 </div>
                                 <div class="col-6">
                                     <label for="altura" class="form-label text-muted-gomos">Altura (cm)</label>
@@ -116,7 +122,7 @@ require_once __DIR__ . '/../partials/navbar.php';
                             <!-- Bio -->
                             <div class="mb-4">
                                 <label for="bio" class="form-label text-muted-gomos">Bio (Escreva algo motivador sobre você)</label>
-                                <textarea name="bio" id="bio" class="form-control form-control-gomos" rows="3" placeholder="Foco na hipertrofia e na disciplina diária."></textarea>
+                                <textarea name="bio" id="bio" class="form-control form-control-gomos" rows="3" placeholder="Foco na hipertrofia e na disciplina diária." maxlength="250"></textarea>
                             </div>
 
                             <div class="d-flex justify-content-between">
@@ -133,7 +139,7 @@ require_once __DIR__ . '/../partials/navbar.php';
                             <div class="row mb-3">
                                 <div class="col-md-8">
                                     <label for="cidade" class="form-label text-muted-gomos">Cidade *</label>
-                                    <input type="text" name="cidade" id="cidade" class="form-control form-control-gomos" placeholder="Ex: São Paulo" required>
+                                    <input type="text" name="cidade" id="cidade" class="form-control form-control-gomos" placeholder="Ex: São Paulo" minlength="2" maxlength="50" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label for="estado" class="form-label text-muted-gomos">Estado (UF) *</label>
@@ -225,18 +231,46 @@ document.addEventListener("DOMContentLoaded", function() {
     function validarEtapa(step) {
         if (step === 1) {
             const nome = document.getElementById("nome").value.trim();
+            const username = document.getElementById("username").value.trim();
             const email = document.getElementById("email").value.trim();
             const senha = document.getElementById("senha").value;
             const confirmar_senha = document.getElementById("confirmar_senha").value;
             const feedbackSenha = document.getElementById("senha-confirm-feedback");
 
-            if (!nome || !email || !senha || !confirmar_senha) {
+            if (!nome || !username || !email || !senha || !confirmar_senha) {
                 alert("Preencha todos os campos obrigatórios.");
                 return false;
             }
 
-            if (senha.length < 6) {
-                alert("A senha deve ter no mínimo 6 caracteres.");
+            if (nome.length < 3 || nome.length > 60) {
+                alert("O nome completo deve conter entre 3 e 60 caracteres.");
+                return false;
+            }
+            if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(nome)) {
+                alert("O nome deve conter apenas letras e espaços.");
+                return false;
+            }
+
+            if (username.length < 3 || username.length > 20) {
+                alert("O username deve conter entre 3 e 20 caracteres.");
+                return false;
+            }
+            if (!/^[a-zA-Z0-9_\-\.]+$/.test(username)) {
+                alert("O username deve conter apenas letras, números, pontos, traços ou sublinhados.");
+                return false;
+            }
+
+            if (email.length > 100) {
+                alert("O e-mail não pode exceder 100 caracteres.");
+                return false;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                alert("Por favor, insira um e-mail válido.");
+                return false;
+            }
+
+            if (senha.length < 6 || senha.length > 32) {
+                alert("A senha deve conter entre 6 e 32 caracteres.");
                 return false;
             }
 
@@ -248,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
             if (!usernameValido) {
-                alert("Escolha um username disponível.");
+                alert("Por favor, informe um username válido e disponível.");
                 return false;
             }
 
@@ -259,6 +293,21 @@ document.addEventListener("DOMContentLoaded", function() {
             const nivel = document.getElementById("nivel_fitness").value;
             if (!nivel) {
                 alert("Selecione o seu nível fitness.");
+                return false;
+            }
+            const pesoVal = parseFloat(document.getElementById("peso").value);
+            if (!isNaN(pesoVal) && (pesoVal < 30 || pesoVal > 300)) {
+                alert("O peso deve ser um valor entre 30kg e 300kg.");
+                return false;
+            }
+            const alturaVal = parseInt(document.getElementById("altura").value);
+            if (!isNaN(alturaVal) && (alturaVal < 100 || alturaVal > 250)) {
+                alert("A altura deve ser um valor entre 100cm e 250cm.");
+                return false;
+            }
+            const bioVal = document.getElementById("bio").value;
+            if (bioVal.length > 250) {
+                alert("A biografia não pode ultrapassar 250 caracteres.");
                 return false;
             }
             return true;
@@ -296,20 +345,44 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    const progressBar = document.getElementById("cadastro-progress-bar");
+
     function updateIndicators(activeStep) {
+        // Atualiza a linha de progresso (0% na etapa 1, 50% na etapa 2, 100% na etapa 3)
+        const progressPercentage = (activeStep - 1) * 50;
+        progressBar.style.width = progressPercentage + "%";
+
         indicators.forEach((ind, index) => {
             const badge = ind.querySelector(".badge");
             const label = ind.querySelector("div");
             
             if (index + 1 === activeStep) {
-                badge.className = "badge rounded-circle bg-orange text-dark p-3";
-                label.className = "small text-white mt-2 d-none d-md-block";
+                // Etapa Ativa
+                badge.style.backgroundColor = "#FF6B00";
+                badge.style.color = "#0D0D0D";
+                badge.classList.remove("text-white");
+                badge.classList.add("text-dark");
+                
+                label.className = "small text-white mt-2 d-none d-md-block fw-bold";
+                label.style.color = "#FFF";
             } else if (index + 1 < activeStep) {
-                badge.className = "badge rounded-circle bg-lime text-dark p-3";
-                label.className = "small text-lime mt-2 d-none d-md-block";
+                // Etapa Concluída
+                badge.style.backgroundColor = "#FF6B00";
+                badge.style.color = "#0D0D0D";
+                badge.classList.remove("text-white");
+                badge.classList.add("text-dark");
+                
+                label.className = "small mt-2 d-none d-md-block fw-bold";
+                label.style.color = "#FF6B00";
             } else {
-                badge.className = "badge rounded-circle bg-secondary text-dark p-3";
+                // Etapa Futura / Pendente
+                badge.style.backgroundColor = "#262626";
+                badge.style.color = "#FFF";
+                badge.classList.remove("text-dark");
+                badge.classList.add("text-white");
+                
                 label.className = "small text-muted mt-2 d-none d-md-block";
+                label.style.color = "#6c757d";
             }
         });
     }

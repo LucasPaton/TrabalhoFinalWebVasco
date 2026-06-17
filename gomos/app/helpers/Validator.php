@@ -68,4 +68,62 @@ class Validator {
         $clean = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
         return intval($clean);
     }
+
+    /**
+     * Formata um nome completo com a primeira letra de cada palavra em maiúscula,
+     * mantendo preposições em minúscula (de, da, do, dos, e).
+     * 
+     * @param string $nome
+     * @return string
+     */
+    public static function formatarNome($nome) {
+        $nome = mb_convert_case(trim($nome), MB_CASE_TITLE, "UTF-8");
+        $preposicoes = ['De', 'Da', 'Do', 'Dos', 'Das', 'E'];
+        foreach ($preposicoes as $prep) {
+            $nome = preg_replace('/\b' . $prep . '\b/u', mb_strtolower($prep), $nome);
+        }
+        return $nome;
+    }
+
+    /**
+     * Formata e limpa o username para letras minúsculas e remove espaços.
+     * 
+     * @param string $username
+     * @return string
+     */
+    public static function formatarUsername($username) {
+        $username = trim($username);
+        $username = strtolower($username);
+        return preg_replace('/\s+/', '', $username);
+    }
+
+    /**
+     * Formata o e-mail para letras minúsculas e remove espaços.
+     * 
+     * @param string $email
+     * @return string
+     */
+    public static function formatarEmail($email) {
+        return strtolower(trim($email));
+    }
+
+    /**
+     * Formata o nome da cidade em Title Case.
+     * 
+     * @param string $cidade
+     * @return string
+     */
+    public static function formatarCidade($cidade) {
+        return mb_convert_case(trim($cidade), MB_CASE_TITLE, "UTF-8");
+    }
+
+    /**
+     * Formata a sigla do estado em letras maiúsculas.
+     * 
+     * @param string $estado
+     * @return string
+     */
+    public static function formatarEstado($estado) {
+        return strtoupper(trim($estado));
+    }
 }

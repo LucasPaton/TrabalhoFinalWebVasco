@@ -45,11 +45,17 @@ $script_name = $_SERVER['SCRIPT_NAME'];
 $base_path = dirname($script_name);
 $base_path = str_replace('\\', '/', $base_path); // Para compatibilidade com Windows
 
+define('BASE_PATH', rtrim($base_path, '/'));
+
+$alternative_base_path = rtrim($base_path, '/public');
+
 if ($base_path === '/') {
     $path = $request_uri;
 } else {
     if (strpos($request_uri, $base_path) === 0) {
         $path = substr($request_uri, strlen($base_path));
+    } elseif (!empty($alternative_base_path) && strpos($request_uri, $alternative_base_path) === 0) {
+        $path = substr($request_uri, strlen($alternative_base_path));
     } else {
         $path = $request_uri;
     }
@@ -101,6 +107,9 @@ addRoute('GET', '/perfil/{username}', 'App\Controllers\UsuarioController@perfil'
 addRoute('POST', '/amigos/adicionar/{id}', 'App\Controllers\UsuarioController@adicionarAmigo');
 addRoute('POST', '/amigos/aceitar/{id}', 'App\Controllers\UsuarioController@aceitarAmigo');
 addRoute('POST', '/amigos/recusar/{id}', 'App\Controllers\UsuarioController@recusarAmigo');
+
+// Busca de Usuários (AJAX)
+addRoute('GET', '/usuarios/buscar', 'App\Controllers\UsuarioController@buscar');
 
 // Treinos
 addRoute('GET', '/treino/criar', 'App\Controllers\TreinoController@criarPagina');

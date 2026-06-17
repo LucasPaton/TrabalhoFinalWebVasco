@@ -16,7 +16,7 @@ class AuthController {
      */
     public function loginPagina() {
         if (Session::has('usuario_id')) {
-            header("Location: /feed");
+            header("Location: " . BASE_PATH . "/feed");
             exit();
         }
         require_once __DIR__ . '/../views/auth/login.php';
@@ -31,7 +31,7 @@ class AuthController {
 
         if (empty($emailOrUsername) || empty($senha)) {
             Session::setFlash('danger', 'Por favor, preencha todos os campos.');
-            header("Location: /login");
+            header("Location: " . BASE_PATH . "/login");
             exit();
         }
 
@@ -47,7 +47,7 @@ class AuthController {
             Session::set('admin_email', $admin['email']);
             Session::set('nivel_acesso', $admin['nivel_acesso']);
             Session::setFlash('success', 'Bem-vindo ao Painel Administrativo, ' . $admin['nome'] . '!');
-            header("Location: /admin");
+            header("Location: " . BASE_PATH . "/admin");
             exit();
         }
 
@@ -78,12 +78,12 @@ class AuthController {
             $stmt_acesso->execute([':id' => $usuario['id']]);
 
             Session::setFlash('success', 'Bem-vindo de volta, ' . $usuario['nome'] . '!');
-            header("Location: /feed");
+            header("Location: " . BASE_PATH . "/feed");
             exit();
         }
 
         Session::setFlash('danger', 'Usuário ou senha incorretos.');
-        header("Location: /login");
+        header("Location: " . BASE_PATH . "/login");
         exit();
     }
 
@@ -92,7 +92,7 @@ class AuthController {
      */
     public function cadastroPagina() {
         if (Session::has('usuario_id')) {
-            header("Location: /feed");
+            header("Location: " . BASE_PATH . "/feed");
             exit();
         }
 
@@ -116,51 +116,136 @@ class AuthController {
      */
     public function cadastrar() {
         $nome = Validator::sanitize($_POST['nome'] ?? '');
-        $username = strtolower(Validator::sanitize($_POST['username'] ?? ''));
+        $nome = Validator::formatarNome($nome);
+
+        $username = Validator::sanitize($_POST['username'] ?? '');
+        $username = Validator::formatarUsername($username);
+
         $email = Validator::sanitize($_POST['email'] ?? '');
+        $email = Validator::formatarEmail($email);
+
         $senha = $_POST['senha'] ?? '';
         $confirmar_senha = $_POST['confirmar_senha'] ?? '';
         
         $nivel_fitness = Validator::sanitize($_POST['nivel_fitness'] ?? 'iniciante');
         $peso = Validator::sanitizeFloat($_POST['peso'] ?? 0);
         $altura = Validator::sanitizeInt($_POST['altura'] ?? 0);
+        
         $bio = Validator::sanitize($_POST['bio'] ?? '');
+        $bio = trim($bio);
         
         $cidade = Validator::sanitize($_POST['cidade'] ?? '');
-        $estado = strtoupper(Validator::sanitize($_POST['estado'] ?? ''));
+        $cidade = Validator::formatarCidade($cidade);
+
+        $estado = Validator::sanitize($_POST['estado'] ?? '');
+        $estado = Validator::formatarEstado($estado);
+
         $academia_id = Validator::sanitizeInt($_POST['academia_id'] ?? 0);
 
-        // Validações obrigatórias
+        // 1. Validações obrigatórias
         if (empty($nome) || empty($username) || empty($email) || empty($senha) || empty($cidade) || empty($estado)) {
             Session::setFlash('danger', 'Por favor, preencha todos os campos obrigatórios.');
-            header("Location: /cadastro");
+            header("Location: " . BASE_PATH . "/cadastro");
             exit();
         }
 
+        // 2. Validação de Nome
+        if (strlen($nome) < 3 || strlen($nome) > 60) {
+            Session::setFlash('danger', 'O nome completo deve conter entre 3 e 60 caracteres.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+        if (!preg_match("/^[a-zA-ZÀ-ÿ\s]+$/u", $nome)) {
+            Session::setFlash('danger', 'O nome completo deve conter apenas letras e espaços.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+
+        // 3. Validação de Username (Nome de Usuário)
+        if (strlen($username) < 3 || strlen($username) > 20) {
+            Session::setFlash('danger', 'O nome de usuário (username) deve conter entre 3 e 20 caracteres.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+        if (!preg_match("/^[a-zA-Z0-9_\-\.]+$/", $username)) {
+            Session::setFlash('danger', 'O nome de usuário deve conter apenas letras, números, pontos, traços ou sublinhados (sem espaços).');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+
+        // 4. Validação de E-mail
+        if (strlen($email) > 100) {
+            Session::setFlash('danger', 'O e-mail não deve exceder 100 caracteres.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
         if (!Validator::validateEmail($email)) {
             Session::setFlash('danger', 'O formato do e-mail inserido é inválido.');
-            header("Location: /cadastro");
+            header("Location: " . BASE_PATH . "/cadastro");
             exit();
         }
 
-        if (!Validator::validatePasswordLength($senha, 6)) {
-            Session::setFlash('danger', 'A senha deve conter no mínimo 6 caracteres.');
-            header("Location: /cadastro");
+        // 5. Validação de Senha
+        if (strlen($senha) < 6 || strlen($senha) > 32) {
+            Session::setFlash('danger', 'A senha deve conter entre 6 e 32 caracteres.');
+            header("Location: " . BASE_PATH . "/cadastro");
             exit();
         }
-
         if (!Validator::matches($senha, $confirmar_senha)) {
-            Session::setFlash('danger', 'As senhas não coincidem.');
-            header("Location: /cadastro");
+            Session::setFlash('danger', 'As senhas inseridas não coincidem.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+
+        // 6. Validação de Cidade e Estado
+        if (strlen($cidade) < 2 || strlen($cidade) > 50) {
+            Session::setFlash('danger', 'A cidade deve conter entre 2 e 50 caracteres.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+        if (strlen($estado) !== 2) {
+            Session::setFlash('danger', 'O estado deve conter exatamente 2 caracteres.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+
+        // 7. Validação de Biografia
+        if (!empty($bio) && strlen($bio) > 250) {
+            Session::setFlash('danger', 'A biografia não deve ultrapassar 250 caracteres.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+
+        // 8. Validação de Peso e Altura
+        if ($peso > 0 && ($peso < 30 || $peso > 300)) {
+            Session::setFlash('danger', 'Por favor, insira um peso realista entre 30kg e 300kg.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+        if ($altura > 0 && ($altura < 100 || $altura > 250)) {
+            Session::setFlash('danger', 'Por favor, insira uma altura realista entre 100cm e 250cm.');
+            header("Location: " . BASE_PATH . "/cadastro");
             exit();
         }
 
         $usuarioModel = new UsuarioModel();
+        $db = \App\Config\Database::getConnection();
 
-        // Verificar unicidade de username e email
-        if (!$usuarioModel->verificarUnicidade($username, $email)) {
-            Session::setFlash('danger', 'Este nome de usuário ou e-mail já está em uso.');
-            header("Location: /cadastro");
+        // 9. Verificar se o nome de usuário já está cadastrado
+        $stmt_check_user = $db->prepare("SELECT COUNT(*) FROM usuarios WHERE username = :username");
+        $stmt_check_user->execute([':username' => $username]);
+        if ($stmt_check_user->fetchColumn() > 0) {
+            Session::setFlash('danger', 'Este nome de usuário (username) já está em uso.');
+            header("Location: " . BASE_PATH . "/cadastro");
+            exit();
+        }
+
+        // 10. Verificar se o e-mail já está cadastrado
+        $stmt_check_email = $db->prepare("SELECT COUNT(*) FROM usuarios WHERE email = :email");
+        $stmt_check_email->execute([':email' => $email]);
+        if ($stmt_check_email->fetchColumn() > 0) {
+            Session::setFlash('danger', 'Este endereço de e-mail já está em uso.');
+            header("Location: " . BASE_PATH . "/cadastro");
             exit();
         }
 
@@ -189,12 +274,12 @@ class AuthController {
                     }
                 } else {
                     Session::setFlash('danger', 'A foto de perfil deve ter no máximo 2MB.');
-                    header("Location: /cadastro");
+                    header("Location: " . BASE_PATH . "/cadastro");
                     exit();
                 }
             } else {
                 Session::setFlash('danger', 'Extensão de imagem inválida (permitido JPG, JPEG, PNG, GIF).');
-                header("Location: /cadastro");
+                header("Location: " . BASE_PATH . "/cadastro");
                 exit();
             }
         }
@@ -233,11 +318,11 @@ class AuthController {
             Session::set('estado', $estado);
 
             Session::setFlash('success', 'Cadastro realizado com sucesso! Bem-vindo ao GOMOS.');
-            header("Location: /feed");
+            header("Location: " . BASE_PATH . "/feed");
             exit();
         } else {
             Session::setFlash('danger', 'Houve um erro ao criar a conta. Tente novamente.');
-            header("Location: /cadastro");
+            header("Location: " . BASE_PATH . "/cadastro");
             exit();
         }
     }
@@ -248,7 +333,7 @@ class AuthController {
     public function logout() {
         Session::destroy();
         // Não precisamos de mensagem flash persistente, mas podemos setar uma e direcionar
-        header("Location: /");
+        header("Location: " . BASE_PATH . "/");
         exit();
     }
 }

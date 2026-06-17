@@ -19,7 +19,7 @@ class UsuarioController {
     public function meuPerfil() {
         Session::check();
         $username = Session::get('username');
-        header("Location: /perfil/" . $username);
+        header("Location: " . BASE_PATH . "/perfil/" . $username);
         exit();
     }
 
@@ -38,7 +38,7 @@ class UsuarioController {
         $usuario = $usuarioModel->buscarPorUsername($username);
         if (!$usuario) {
             Session::setFlash('danger', 'Usuário não encontrado.');
-            header("Location: /feed");
+            header("Location: " . BASE_PATH . "/feed");
             exit();
         }
 
@@ -99,17 +99,70 @@ class UsuarioController {
         $usuario_id = Session::get('usuario_id');
 
         $nome = Validator::sanitize($_POST['nome'] ?? '');
+        $nome = Validator::formatarNome($nome);
+
         $bio = Validator::sanitize($_POST['bio'] ?? '');
+        $bio = trim($bio);
+
         $nivel_fitness = Validator::sanitize($_POST['nivel_fitness'] ?? 'iniciante');
         $peso = Validator::sanitizeFloat($_POST['peso'] ?? 0);
         $altura = Validator::sanitizeInt($_POST['altura'] ?? 0);
+
         $cidade = Validator::sanitize($_POST['cidade'] ?? '');
-        $estado = strtoupper(Validator::sanitize($_POST['estado'] ?? ''));
+        $cidade = Validator::formatarCidade($cidade);
+
+        $estado = Validator::sanitize($_POST['estado'] ?? '');
+        $estado = Validator::formatarEstado($estado);
+
         $academia_id = Validator::sanitizeInt($_POST['academia_id'] ?? 0);
 
+        // Validações obrigatórias
         if (empty($nome) || empty($cidade) || empty($estado)) {
             Session::setFlash('danger', 'Por favor, preencha os campos obrigatórios.');
-            header("Location: /perfil/editar");
+            header("Location: " . BASE_PATH . "/perfil/editar");
+            exit();
+        }
+
+        // Validação de Nome
+        if (strlen($nome) < 3 || strlen($nome) > 60) {
+            Session::setFlash('danger', 'O nome completo deve conter entre 3 e 60 caracteres.');
+            header("Location: " . BASE_PATH . "/perfil/editar");
+            exit();
+        }
+        if (!preg_match("/^[a-zA-ZÀ-ÿ\s]+$/u", $nome)) {
+            Session::setFlash('danger', 'O nome completo deve conter apenas letras e espaços.');
+            header("Location: " . BASE_PATH . "/perfil/editar");
+            exit();
+        }
+
+        // Validação de Cidade e Estado
+        if (strlen($cidade) < 2 || strlen($cidade) > 50) {
+            Session::setFlash('danger', 'A cidade deve conter entre 2 e 50 caracteres.');
+            header("Location: " . BASE_PATH . "/perfil/editar");
+            exit();
+        }
+        if (strlen($estado) !== 2) {
+            Session::setFlash('danger', 'O estado deve conter exatamente 2 caracteres.');
+            header("Location: " . BASE_PATH . "/perfil/editar");
+            exit();
+        }
+
+        // Validação de Biografia
+        if (!empty($bio) && strlen($bio) > 250) {
+            Session::setFlash('danger', 'A biografia não deve ultrapassar 250 caracteres.');
+            header("Location: " . BASE_PATH . "/perfil/editar");
+            exit();
+        }
+
+        // Validação de Peso e Altura
+        if ($peso > 0 && ($peso < 30 || $peso > 300)) {
+            Session::setFlash('danger', 'Por favor, insira um peso realista entre 30kg e 300kg.');
+            header("Location: " . BASE_PATH . "/perfil/editar");
+            exit();
+        }
+        if ($altura > 0 && ($altura < 100 || $altura > 250)) {
+            Session::setFlash('danger', 'Por favor, insira uma altura realista entre 100cm e 250cm.');
+            header("Location: " . BASE_PATH . "/perfil/editar");
             exit();
         }
 
@@ -162,7 +215,7 @@ class UsuarioController {
             Session::setFlash('danger', 'Houve um erro ao atualizar o perfil.');
         }
 
-        header("Location: /perfil");
+        header("Location: " . BASE_PATH . "/perfil");
         exit();
     }
 
@@ -176,7 +229,7 @@ class UsuarioController {
 
         if ($logado_id == $amigo_id) {
             Session::setFlash('danger', 'Você não pode adicionar a si mesmo.');
-            header("Location: /feed");
+            header("Location: " . BASE_PATH . "/feed");
             exit();
         }
 
@@ -192,7 +245,7 @@ class UsuarioController {
         // Redireciona de volta para o perfil do amigo
         $usuarioModel = new UsuarioModel();
         $amigo = $usuarioModel->buscarPorId($amigo_id);
-        header("Location: /perfil/" . ($amigo ? $amigo['username'] : ''));
+        header("Location: " . BASE_PATH . "/perfil/" . ($amigo ? $amigo['username'] : ''));
         exit();
     }
 
@@ -213,7 +266,7 @@ class UsuarioController {
             Session::setFlash('danger', 'Houve um erro ao aceitar a solicitação.');
         }
 
-        header("Location: /perfil");
+        header("Location: " . BASE_PATH . "/perfil");
         exit();
     }
 
@@ -234,7 +287,38 @@ class UsuarioController {
             Session::setFlash('danger', 'Houve um erro ao desfazer amizade.');
         }
 
-        header("Location: /perfil");
+        header("Location: " . BASE_PATH . "/perfil");
+        exit();
+    }
+
+    /**
+     * Busca de usuários por AJAX (retorna JSON).
+     * Endpoint: GET /usuarios/buscar?q=termo
+     */
+    public function buscar() {
+        Session::check();
+        $logado_id = Session::get('usuario_id');
+
+        $query = trim($_GET['q'] ?? '');
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (strlen($query) < 2) {
+            echo json_encode(['resultados' => []]);
+            exit();
+        }
+
+        $usuarioModel = new UsuarioModel();
+        $resultados = $usuarioModel->pesquisarUsuarios($query, $logado_id);
+
+        // Montar o caminho da imagem para cada resultado
+        $root = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+        foreach ($resultados as &$user) {
+            $user['foto_url'] = $root . '/assets/img/' . ($user['foto_perfil'] ?: 'default_avatar.png');
+            $user['perfil_url'] = rtrim($root, '/public') . '/perfil/' . $user['username'];
+        }
+
+        echo json_encode(['resultados' => $resultados]);
         exit();
     }
 }

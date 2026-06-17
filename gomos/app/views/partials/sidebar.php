@@ -34,6 +34,21 @@ $uri = $_SERVER['REQUEST_URI'];
         </div>
     </div>
 
+    <!-- Barra de Busca de Usuários -->
+    <?php if ($usuarioId): ?>
+    <div class="px-3 py-3" style="border-bottom: 1px solid var(--border-color);">
+        <div class="search-users-container">
+            <i class="fa-solid fa-magnifying-glass search-users-icon"></i>
+            <input type="text" 
+                   id="busca-usuarios-input" 
+                   class="search-users-input" 
+                   placeholder="Buscar atletas..." 
+                   autocomplete="off">
+            <div id="busca-usuarios-resultados" class="search-results-dropdown"></div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Navigation Menu -->
     <ul class="sidebar-menu">
         <?php if ($usuarioId): ?>
@@ -84,3 +99,78 @@ $uri = $_SERVER['REQUEST_URI'];
         </li>
     </ul>
 </div>
+
+<!-- Script de Busca de Usuários -->
+<?php if ($usuarioId): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const inputBusca = document.getElementById('busca-usuarios-input');
+    const containerResultados = document.getElementById('busca-usuarios-resultados');
+    const rootPath = window.GOMOS_ROOT || '';
+    let timerBusca = null;
+
+    if (!inputBusca) return;
+
+    inputBusca.addEventListener('input', function() {
+        const query = this.value.trim();
+        clearTimeout(timerBusca);
+
+        if (query.length < 2) {
+            containerResultados.classList.remove('show');
+            containerResultados.innerHTML = '';
+            return;
+        }
+
+        // Mostrar loading
+        containerResultados.innerHTML = '<div class="search-loading"><i class="fa-solid fa-spinner fa-spin"></i> Buscando...</div>';
+        containerResultados.classList.add('show');
+
+        // Debounce de 350ms
+        timerBusca = setTimeout(function() {
+            fetch(rootPath + '/usuarios/buscar?q=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.resultados && data.resultados.length > 0) {
+                        let html = '';
+                        data.resultados.forEach(function(user) {
+                            html += '<a href="' + user.perfil_url + '" class="search-result-item">';
+                            html += '  <img src="' + user.foto_url + '" alt="' + user.nome + '" class="search-result-avatar">';
+                            html += '  <div class="search-result-info">';
+                            html += '    <div class="search-result-name">' + user.nome + '</div>';
+                            html += '    <div class="search-result-username">@' + user.username + '</div>';
+                            if (user.cidade && user.estado) {
+                                html += '    <div class="search-result-location"><i class="fa-solid fa-location-dot"></i> ' + user.cidade + '/' + user.estado + '</div>';
+                            }
+                            html += '  </div>';
+                            html += '</a>';
+                        });
+                        containerResultados.innerHTML = html;
+                    } else {
+                        containerResultados.innerHTML = '<div class="search-no-results"><i class="fa-solid fa-user-xmark"></i> Nenhum atleta encontrado.</div>';
+                    }
+                    containerResultados.classList.add('show');
+                })
+                .catch(function() {
+                    containerResultados.innerHTML = '<div class="search-no-results">Erro ao buscar. Tente novamente.</div>';
+                    containerResultados.classList.add('show');
+                });
+        }, 350);
+    });
+
+    // Fechar dropdown ao clicar fora
+    document.addEventListener('click', function(e) {
+        if (!inputBusca.contains(e.target) && !containerResultados.contains(e.target)) {
+            containerResultados.classList.remove('show');
+        }
+    });
+
+    // Reabrir ao focar no input se já tem texto
+    inputBusca.addEventListener('focus', function() {
+        if (this.value.trim().length >= 2 && containerResultados.innerHTML.trim() !== '') {
+            containerResultados.classList.add('show');
+        }
+    });
+});
+</script>
+<?php endif; ?>
+

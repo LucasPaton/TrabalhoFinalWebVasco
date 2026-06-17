@@ -100,7 +100,7 @@ class AdminController {
             Session::setFlash('success', 'Usuário excluído permanentemente!');
         }
 
-        header("Location: /admin?tab=usuarios");
+        header("Location: " . BASE_PATH . "/admin?tab=usuarios");
         exit();
     }
 
@@ -123,7 +123,7 @@ class AdminController {
 
             if (empty($nome) || empty($endereco) || empty($cidade) || empty($estado) || empty($cep)) {
                 Session::setFlash('danger', 'Preencha os dados obrigatórios da academia.');
-                header("Location: /admin?tab=academias");
+                header("Location: " . BASE_PATH . "/admin?tab=academias");
                 exit();
             }
 
@@ -195,7 +195,7 @@ class AdminController {
             Session::setFlash('success', 'Academia removida!');
         }
 
-        header("Location: /admin?tab=academias");
+        header("Location: " . BASE_PATH . "/admin?tab=academias");
         exit();
     }
 
@@ -215,7 +215,7 @@ class AdminController {
 
             if (empty($nome) || empty($grupo_muscular)) {
                 Session::setFlash('danger', 'Nome e Grupo Muscular são obrigatórios.');
-                header("Location: /admin?tab=exercicios");
+                header("Location: " . BASE_PATH . "/admin?tab=exercicios");
                 exit();
             }
 
@@ -250,7 +250,7 @@ class AdminController {
             Session::setFlash('success', 'Exercício excluído do catálogo.');
         }
 
-        header("Location: /admin?tab=exercicios");
+        header("Location: " . BASE_PATH . "/admin?tab=exercicios");
         exit();
     }
 
@@ -267,7 +267,7 @@ class AdminController {
 
             if (empty($nome) || empty($descricao)) {
                 Session::setFlash('danger', 'Nome e descrição são obrigatórios.');
-                header("Location: /admin?tab=conquistas");
+                header("Location: " . BASE_PATH . "/admin?tab=conquistas");
                 exit();
             }
 
@@ -290,7 +290,7 @@ class AdminController {
             Session::setFlash('success', 'Nova conquista criada!');
         }
 
-        header("Location: /admin?tab=conquistas");
+        header("Location: " . BASE_PATH . "/admin?tab=conquistas");
         exit();
     }
 
@@ -312,7 +312,7 @@ class AdminController {
             Session::setFlash('danger', 'Treino não encontrado.');
         }
 
-        header("Location: /admin?tab=treinos");
+        header("Location: " . BASE_PATH . "/admin?tab=treinos");
         exit();
     }
 }
