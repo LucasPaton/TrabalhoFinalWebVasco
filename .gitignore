@@ -1,0 +1,14 @@
+# Word Document to exclude as requested
+ProjetoFinal_MVC_BD_Sessao.docx
+*.docx
+
+# IDEs & System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# XAMPP / PHP local configs
+php.ini
+.env
+uploads/tmp/
