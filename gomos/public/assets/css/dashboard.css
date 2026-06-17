@@ -1,0 +1,347 @@
+/* Estilos da Área Logada e Dashboard - GOMOS */
+
+/* Layout Flex com Sidebar */
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Fixo Desktop */
+.sidebar-gomos {
+    width: 280px;
+    background-color: var(--bg-card);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.sidebar-brand {
+    padding: 25px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-user-info {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-primary);
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.sidebar-menu-item a {
+    display: flex;
+    align-items: center;
+    padding: 12px 25px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.sidebar-menu-item a i {
+    width: 25px;
+    margin-right: 15px;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    transition: color 0.3s;
+}
+
+.sidebar-menu-item a:hover {
+    background-color: rgba(255, 107, 0, 0.05);
+    border-left-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.sidebar-menu-item a:hover i {
+    color: var(--accent-primary);
+}
+
+.sidebar-menu-item.active a {
+    background-color: rgba(255, 107, 0, 0.1);
+    border-left-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.sidebar-menu-item.active a i {
+    color: var(--accent-primary);
+}
+
+/* Área de Conteúdo Principal */
+.main-content-gomos {
+    flex-grow: 1;
+    margin-left: 280px; /* Mesma largura da sidebar */
+    padding: 40px;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 991px) {
+    .sidebar-gomos {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .sidebar-menu {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+    
+    .sidebar-menu-item a {
+        padding: 10px 15px;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+    }
+
+    .sidebar-menu-item.active a {
+        background-color: transparent;
+        border-bottom-color: var(--accent-primary);
+    }
+
+    .main-content-gomos {
+        margin-left: 0;
+        padding: 20px;
+    }
+}
+
+/* Feed Social Cards */
+.feed-post-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 25px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.feed-post-card:hover {
+    border-color: rgba(255, 107, 0, 0.4);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.feed-post-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.feed-post-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-primary);
+    object-fit: cover;
+    margin-right: 15px;
+}
+
+.feed-post-meta {
+    flex-grow: 1;
+}
+
+.feed-post-meta h6 {
+    margin-bottom: 2px;
+}
+
+.feed-post-meta span {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.feed-post-body {
+    padding: 20px;
+}
+
+.feed-post-exercises {
+    background-color: #242424;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.feed-post-actions {
+    padding: 15px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    gap: 20px;
+}
+
+.feed-post-action-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: color 0.3s;
+    cursor: pointer;
+}
+
+.feed-post-action-btn:hover {
+    color: var(--accent-primary);
+}
+
+.feed-post-action-btn.active {
+    color: var(--accent-primary);
+}
+
+/* Sidebar Direito */
+.sidebar-right {
+    position: sticky;
+    top: 40px;
+}
+
+/* Rankings List */
+.ranking-list-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ranking-list-item:last-child {
+    border-bottom: none;
+}
+
+.ranking-position {
+    font-family: var(--font-titles);
+    font-size: 1.4rem;
+    width: 30px;
+    text-align: center;
+}
+
+.ranking-medal {
+    font-size: 1.25rem;
+}
+
+.ranking-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 15px;
+}
+
+/* Builder de Treino (Criar Treino) */
+.builder-exercise-card {
+    background-color: #242424;
+    border: 1px dashed var(--border-color);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    cursor: move;
+}
+
+.builder-remove-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #DC3545;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+}
+
+/* Conquistas (Profile) */
+.badge-grid-item {
+    text-align: center;
+    background-color: #242424;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px 10px;
+    transition: all 0.3s;
+}
+
+.badge-grid-item:hover {
+    border-color: var(--accent-secondary);
+    transform: translateY(-5px);
+}
+
+.badge-icon-img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 12px;
+}
+
+/* Níveis Progress Bar */
+.progress-gomos {
+    background-color: #242424;
+    height: 12px;
+    border-radius: 6px;
+}
+
+.progress-bar-gomos {
+    background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    border-radius: 6px;
+}
+
+/* Comparador de Treinos */
+.comparison-container {
+    display: flex;
+    gap: 20px;
+}
+
+.comparison-column {
+    flex: 1;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.winner-highlight {
+    border-color: var(--accent-secondary) !important;
+    box-shadow: 0 0 20px rgba(163, 230, 53, 0.2);
+}
+
+.winner-badge {
+    background-color: var(--accent-secondary);
+    color: #0D0D0D;
+    font-family: var(--font-titles);
+    padding: 5px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* Painel Admin Tabs */
+.admin-tab-btn {
+    font-family: var(--font-titles);
+    font-size: 1.2rem;
+    background-color: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 10px 20px;
+    border-bottom: 3px solid transparent;
+}
+
+.admin-tab-btn.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+}
