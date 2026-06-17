@@ -158,7 +158,7 @@ class AuthController {
         $usuarioModel = new UsuarioModel();
 
         // Verificar unicidade de username e email
-        if (!$usuarioModel::verificarUnicidade($username, $email)) {
+        if (!$usuarioModel->verificarUnicidade($username, $email)) {
             Session::setFlash('danger', 'Este nome de usuário ou e-mail já está em uso.');
             header("Location: /cadastro");
             exit();
