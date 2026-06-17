@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Previne listagem de diretório
+    Options -Indexes
+
+    # Se a requisição não for de um arquivo existente
+    RewriteCond %{REQUEST_FILENAME} !-f
+    # Nem de um diretório existente
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # Reescreve tudo para o index.php mantendo a Query String original (QSA)
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
