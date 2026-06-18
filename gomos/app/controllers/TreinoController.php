@@ -8,6 +8,7 @@ use App\Models\ExercicioModel;
 use App\Models\ComentarioModel;
 use App\Models\UsuarioModel;
 use App\Models\AmizadeModel;
+use App\Models\AcademiaModel;
 
 /**
  * Controller responsável pela criação, visualização e comparação de treinos.
@@ -386,5 +387,113 @@ class TreinoController {
         }
 
         require_once __DIR__ . '/../views/treino/pesquisar.php';
+    }
+
+    /**
+     * Lista todas as fichas de treino do próprio usuário.
+     * Endpoint: GET /treinos/fichas
+     */
+    public function fichasUsuario() {
+        Session::check();
+        $usuario_id = Session::get('usuario_id');
+        $treinoModel = new TreinoModel();
+        
+        // Busca todos os treinos do usuário (incluindo os privados)
+        $treinos = $treinoModel->listarPorUsuario($usuario_id, true, $usuario_id);
+        
+        // Carregar exercícios e estatísticas de cada ficha
+        foreach ($treinos as &$t) {
+            $t['exercicios'] = $treinoModel->buscarExercicios($t['id']);
+            $t['total_exercicios'] = count($t['exercicios']);
+        }
+        
+        require_once __DIR__ . '/../views/treino/fichas.php';
+    }
+
+    /**
+     * Tela de rastreamento de treino ativo (Workout Tracker Hevy style).
+     * Endpoint: GET /treino/iniciar/{id}
+     */
+    public function iniciarTreino($id) {
+        Session::check();
+        $usuario_id = Session::get('usuario_id');
+        $treinoModel = new TreinoModel();
+        
+        $treino = $treinoModel->buscarPorId($id, $usuario_id);
+        if (!$treino) {
+            header('Location: ' . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/public') . '/feed');
+            exit();
+        }
+        
+        $exercicios = $treinoModel->buscarExercicios($id);
+        
+        require_once __DIR__ . '/../views/treino/iniciar.php';
+    }
+
+    /**
+     * Finaliza o treino ativo, registra o log de execução como check-in na academia
+     * e concede pontos extras de evolução.
+     * Endpoint: POST /treino/finalizar/{id}
+     */
+    public function finalizarTreino($id) {
+        Session::check();
+        $usuario_id = Session::get('usuario_id');
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Método inválido.']);
+            exit();
+        }
+        
+        $duracao_minutos = intval($_POST['duracao_minutos'] ?? 0);
+        $observacao_usuario = trim($_POST['observacao'] ?? '');
+        
+        $treinoModel = new TreinoModel();
+        $treino = $treinoModel->buscarPorId($id);
+        
+        if (!$treino) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Treino não encontrado.']);
+            exit();
+        }
+        
+        // Carrega o usuário para obter a academia vinculada
+        $uModel = new UsuarioModel();
+        $usuario = $uModel->buscarPorId($usuario_id);
+        
+        // Determina a academia (usa a do usuário ou a de ID 1 como fallback)
+        $academia_id = !empty($usuario['academia_id']) ? $usuario['academia_id'] : 1;
+        
+        // Formata observação de conclusão
+        $obs = "Treino concluído com sucesso via GOMOS Tracker! Duração total: {$duracao_minutos} minutos.";
+        if (!empty($observacao_usuario)) {
+            $obs .= " Nota do atleta: " . $observacao_usuario;
+        }
+        
+        // Registra o check-in na academia e concede +5 pontos automáticos pelo check-in + conquista
+        $aModel = new AcademiaModel();
+        $sucesso = $aModel->registrarCheckin($usuario_id, $academia_id, $id, $obs);
+        
+        if ($sucesso) {
+            // Recompensa o usuário com +15 pontos adicionais no ranking (por finalizar o treino Hevy completo)
+            $uModel->adicionarPontos($usuario_id, 15);
+            
+            // Incrementa o número total de treinos concluídos pelo usuário (total_treinos)
+            $db = \App\Config\Database::getConnection();
+            $stmt = $db->prepare("UPDATE usuarios SET total_treinos = total_treinos + 1 WHERE id = :id");
+            $stmt->execute([':id' => $usuario_id]);
+            
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'sucesso',
+                'mensagem' => 'Treino concluído! Parabéns pelos ganhos! +20 pontos de evolução adicionados.',
+                'duracao' => $duracao_minutos
+            ]);
+            exit();
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Não foi possível salvar o registro do treino.']);
+            exit();
+        }
     }
 }

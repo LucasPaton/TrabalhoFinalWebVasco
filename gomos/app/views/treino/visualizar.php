@@ -141,7 +141,7 @@ require_once __DIR__ . '/../partials/header.php';
                     <div class="card-gomos text-center p-4">
                         <h4 class="text-white mb-3">APROVAÇÃO DO TREINO</h4>
                         <button class="btn btn-primary-gomos w-100 py-3 btn-curtir-ajax <?= $treino['curtiu'] ? 'active text-orange' : '' ?>" data-id="<?= $treino['id'] ?>">
-                            <i class="<?= $treino['curtiu'] ? 'fa-solid' : 'fa-regular' ?> fa-heart me-2"></i> ❤️ APOIAR TREINO (CURTIR)
+                            <i class="<?= $treino['curtiu'] ? 'fa-solid' : 'fa-regular' ?> fa-heart me-2"></i> APOIAR TREINO (CURTIR)
                         </button>
                         <div class="mt-3 text-secondary">
                             <span>Total de curtidas recebidas: <strong class="text-lime curtidas-count"><?= $treino['total_curtidas'] ?></strong></span>

@@ -95,11 +95,11 @@ require_once __DIR__ . '/../partials/header.php';
                                 <!-- Ações do Post -->
                                 <div class="feed-post-actions">
                                     <button class="feed-post-action-btn btn-curtir-ajax <?= $t['curtiu'] ? 'active text-orange' : '' ?>" data-id="<?= $t['id'] ?>">
-                                        <i class="<?= $t['curtiu'] ? 'fa-solid' : 'fa-regular' ?> fa-heart"></i> ❤️ <span class="curtidas-count"><?= $t['total_curtidas'] ?></span>
+                                        <i class="<?= $t['curtiu'] ? 'fa-solid' : 'fa-regular' ?> fa-heart me-1"></i> <span class="curtidas-count"><?= $t['total_curtidas'] ?></span>
                                     </button>
                                     
                                     <a href="<?= $rootUrl ?>/treino/<?= $t['id'] ?>#comentarios" class="feed-post-action-btn text-decoration-none">
-                                        <i class="fa-regular fa-comment"></i> 💬 <span><?= $t['total_comentarios'] ?></span>
+                                        <i class="fa-regular fa-comment me-1"></i> <span><?= $t['total_comentarios'] ?></span>
                                     </a>
 
                                     <button class="feed-post-action-btn" onclick="navigator.clipboard.writeText('<?= $_SERVER['HTTP_HOST'] . $rootUrl ?>/treino/<?= $t['id'] ?>'); alert('Link do treino copiado para a área de transferência!');">

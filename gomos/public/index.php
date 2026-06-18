@@ -121,6 +121,9 @@ addRoute('POST', '/treino/excluir/{id}', 'App\Controllers\TreinoController@exclu
 addRoute('POST', '/treino/curtir/{id}', 'App\Controllers\TreinoController@curtir');
 addRoute('POST', '/treino/comentar/{id}', 'App\Controllers\TreinoController@comentar');
 addRoute('POST', '/treino/copiar/{id}', 'App\Controllers\TreinoController@copiar');
+addRoute('GET', '/treinos/fichas', 'App\Controllers\TreinoController@fichasUsuario');
+addRoute('GET', '/treino/iniciar/{id}', 'App\Controllers\TreinoController@iniciarTreino');
+addRoute('POST', '/treino/finalizar/{id}', 'App\Controllers\TreinoController@finalizarTreino');
 
 // Rankings
 addRoute('GET', '/ranking', 'App\Controllers\RankingController@index');

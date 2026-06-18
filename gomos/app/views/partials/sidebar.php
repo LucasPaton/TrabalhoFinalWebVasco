@@ -62,6 +62,11 @@ $uri = $_SERVER['REQUEST_URI'];
                     <i class="fa-solid fa-user"></i> Meu Perfil
                 </a>
             </li>
+            <li class="sidebar-menu-item <?= (strpos($uri, '/treinos/fichas') !== false) ? 'active' : '' ?>">
+                <a href="<?= $rootUrl ?>/treinos/fichas">
+                    <i class="fa-solid fa-sheet-plastic"></i> Minhas Fichas
+                </a>
+            </li>
             <li class="sidebar-menu-item <?= (strpos($uri, '/treino/criar') !== false) ? 'active' : '' ?>">
                 <a href="<?= $rootUrl ?>/treino/criar">
                     <i class="fa-solid fa-plus"></i> Criar Treino
