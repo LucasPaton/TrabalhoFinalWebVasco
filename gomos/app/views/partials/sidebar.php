@@ -34,17 +34,17 @@ $uri = $_SERVER['REQUEST_URI'];
         </div>
     </div>
 
-    <!-- Barra de Busca de Usuários -->
+    <!-- Barra de Busca de Treinos -->
     <?php if ($usuarioId): ?>
     <div class="px-3 py-3" style="border-bottom: 1px solid var(--border-color);">
         <div class="search-users-container">
             <i class="fa-solid fa-magnifying-glass search-users-icon"></i>
             <input type="text" 
-                   id="busca-usuarios-input" 
+                   id="busca-treinos-input" 
                    class="search-users-input" 
-                   placeholder="Buscar atletas..." 
+                   placeholder="Buscar treinos..." 
                    autocomplete="off">
-            <div id="busca-usuarios-resultados" class="search-results-dropdown"></div>
+            <div id="busca-treinos-resultados" class="search-results-dropdown"></div>
         </div>
     </div>
     <?php endif; ?>
@@ -77,9 +77,9 @@ $uri = $_SERVER['REQUEST_URI'];
                     <i class="fa-solid fa-trophy"></i> Rankings
                 </a>
             </li>
-            <li class="sidebar-menu-item <?= (strpos($uri, '/usuarios/pesquisar') !== false) ? 'active' : '' ?>">
-                <a href="<?= $rootUrl ?>/usuarios/pesquisar">
-                    <i class="fa-solid fa-magnifying-glass"></i> Buscar Atletas
+            <li class="sidebar-menu-item <?= (strpos($uri, '/treinos/pesquisar') !== false) ? 'active' : '' ?>">
+                <a href="<?= $rootUrl ?>/treinos/pesquisar">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar Treinos
                 </a>
             </li>
             <li class="sidebar-menu-item <?= (strpos($uri, '/academias') !== false) ? 'active' : '' ?>">
@@ -105,12 +105,12 @@ $uri = $_SERVER['REQUEST_URI'];
     </ul>
 </div>
 
-<!-- Script de Busca de Usuários -->
+<!-- Script de Busca de Treinos -->
 <?php if ($usuarioId): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const inputBusca = document.getElementById('busca-usuarios-input');
-    const containerResultados = document.getElementById('busca-usuarios-resultados');
+    const inputBusca = document.getElementById('busca-treinos-input');
+    const containerResultados = document.getElementById('busca-treinos-resultados');
     const rootPath = window.GOMOS_ROOT || '';
     let timerBusca = null;
 
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') {
             const query = this.value.trim();
             if (query.length >= 2) {
-                window.location.href = rootPath + '/usuarios/pesquisar?q=' + encodeURIComponent(query);
+                window.location.href = rootPath + '/treinos/pesquisar?q=' + encodeURIComponent(query);
             }
         }
     });
@@ -142,32 +142,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Debounce de 350ms
         timerBusca = setTimeout(function() {
-            fetch(rootPath + '/usuarios/buscar?q=' + encodeURIComponent(query))
+            fetch(rootPath + '/treinos/buscar?q=' + encodeURIComponent(query))
                 .then(response => response.json())
                 .then(data => {
                     if (data.resultados && data.resultados.length > 0) {
                         let html = '';
-                        data.resultados.forEach(function(user) {
-                            html += '<a href="' + user.perfil_url + '" class="search-result-item">';
-                            html += '  <img src="' + user.foto_url + '" alt="' + user.nome + '" class="search-result-avatar">';
-                            html += '  <div class="search-result-info">';
-                            html += '    <div class="search-result-name">' + user.nome + '</div>';
-                            html += '    <div class="search-result-username">@' + user.username + '</div>';
-                            if (user.cidade && user.estado) {
-                                html += '    <div class="search-result-location"><i class="fa-solid fa-location-dot"></i> ' + user.cidade + '/' + user.estado + '</div>';
-                            }
+                        data.resultados.forEach(function(treino) {
+                            html += '<a href="' + treino.treino_url + '" class="search-result-item">';
+                            html += '  <div class="search-result-info w-100">';
+                            html += '    <div class="search-result-name text-orange fw-bold">' + treino.titulo + '</div>';
+                            html += '    <div class="search-result-username text-muted-gomos">Grupo: ' + treino.grupo_muscular + '</div>';
+                            html += '    <div class="search-result-location small text-secondary">Postado por: @' + treino.username + '</div>';
                             html += '  </div>';
                             html += '</a>';
                         });
                         
                         // Item de ver todos os resultados no final
-                        html += '<a href="' + rootPath + '/usuarios/pesquisar?q=' + encodeURIComponent(query) + '" class="search-result-item text-center justify-content-center text-orange fw-bold border-top border-secondary">';
+                        html += '<a href="' + rootPath + '/treinos/pesquisar?q=' + encodeURIComponent(query) + '" class="search-result-item text-center justify-content-center text-orange fw-bold border-top border-secondary">';
                         html += '  <i class="fa-solid fa-magnifying-glass me-2"></i> Ver todos os resultados';
                         html += '</a>';
                         
                         containerResultados.innerHTML = html;
                     } else {
-                        containerResultados.innerHTML = '<div class="search-no-results"><i class="fa-solid fa-user-xmark"></i> Nenhum atleta encontrado.</div>';
+                        containerResultados.innerHTML = '<div class="search-no-results"><i class="fa-solid fa-dumbbell"></i> Nenhum treino encontrado.</div>';
                     }
                     containerResultados.classList.add('show');
                 })

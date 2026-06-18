@@ -372,4 +372,30 @@ class TreinoModel {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':id' => $id]);
     }
+
+    /**
+     * Pesquisa treinos pelo título, descrição ou grupo muscular.
+     */
+    public function pesquisarTreinos($query, $usuario_id) {
+        $sql = "SELECT t.*, u.nome as nome_usuario, u.username, u.foto_perfil, u.nivel_fitness,
+                (SELECT COUNT(*) FROM curtidas WHERE treino_id = t.id) as total_curtidas,
+                (SELECT COUNT(*) FROM comentarios WHERE treino_id = t.id) as total_comentarios,
+                (SELECT COUNT(*) FROM curtidas WHERE treino_id = t.id AND usuario_id = :usuario_id_curtiu) as curtiu
+                FROM treinos t
+                INNER JOIN usuarios u ON t.usuario_id = u.id
+                WHERE (t.titulo LIKE :query1 OR t.descricao LIKE :query2 OR t.grupo_muscular LIKE :query3)
+                  AND (t.publico = 1 OR t.usuario_id = :usuario_id_dono)
+                  AND u.ativo = 1
+                ORDER BY t.criado_em DESC";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':usuario_id_curtiu' => $usuario_id,
+            ':usuario_id_dono' => $usuario_id,
+            ':query1' => '%' . $query . '%',
+            ':query2' => '%' . $query . '%',
+            ':query3' => '%' . $query . '%'
+        ]);
+        return $stmt->fetchAll();
+    }
 }

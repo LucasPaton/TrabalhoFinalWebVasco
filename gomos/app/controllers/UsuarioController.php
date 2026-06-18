@@ -303,95 +303,12 @@ class UsuarioController {
 
         // Redirecionamento inteligente
         $referer = $_SERVER['HTTP_REFERER'] ?? '';
-        if (strpos($referer, '/usuarios/pesquisar') !== false) {
+        if (strpos($referer, '/treinos/pesquisar') !== false) {
             header("Location: " . $referer);
             exit();
         }
 
         header("Location: " . BASE_PATH . "/perfil");
         exit();
-    }
-
-    /**
-     * Busca de usuários por AJAX (retorna JSON).
-     * Endpoint: GET /usuarios/buscar?q=termo
-     */
-    public function buscar() {
-        Session::check();
-        $logado_id = Session::get('usuario_id');
-
-        $query = trim($_GET['q'] ?? '');
-        if (strpos($query, '@') === 0) {
-            $query = substr($query, 1);
-        }
-
-        header('Content-Type: application/json; charset=utf-8');
-
-        if (strlen($query) < 2) {
-            echo json_encode(['resultados' => []]);
-            exit();
-        }
-
-        $usuarioModel = new UsuarioModel();
-        $resultados = $usuarioModel->pesquisarUsuarios($query, $logado_id);
-
-        // Montar o caminho da imagem para cada resultado
-        $root = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-        foreach ($resultados as &$user) {
-            $user['foto_url'] = $root . '/assets/img/' . ($user['foto_perfil'] ?: 'default_avatar.png');
-            $user['perfil_url'] = rtrim($root, '/public') . '/perfil/' . $user['username'];
-        }
-
-        echo json_encode(['resultados' => $resultados]);
-        exit();
-    }
-
-    /**
-     * Tela dedicada para busca de usuários.
-     * Endpoint: GET /usuarios/pesquisar
-     */
-    public function pesquisar() {
-        Session::check();
-        $usuario_logado_id = Session::get('usuario_id');
-
-        $query = trim($_GET['q'] ?? '');
-        if (strpos($query, '@') === 0) {
-            $query = substr($query, 1);
-        }
-
-        $resultados = [];
-        $usuarioModel = new UsuarioModel();
-        $amizadeModel = new AmizadeModel();
-
-        if (strlen($query) >= 2) {
-            $resultados = $usuarioModel->pesquisarUsuarios($query, $usuario_logado_id);
-            
-            // Buscar status de amizade e nome da academia de cada atleta da busca
-            foreach ($resultados as &$res) {
-                $res['status_amizade'] = $amizadeModel->verificarStatus($usuario_logado_id, $res['id']);
-                if (!empty($res['academia_id'])) {
-                    $academiaModel = new AcademiaModel();
-                    $acad = $academiaModel->buscarPorId($res['academia_id']);
-                    $res['academia_nome'] = $acad ? $acad['nome'] : '';
-                } else {
-                    $res['academia_nome'] = '';
-                }
-            }
-        }
-
-        // Listar sugestões de amigos (caso a busca esteja vazia ou para ajudar a expandir a rede)
-        $sugestoes = $amizadeModel->listarSugestoesAmigos($usuario_logado_id, 6);
-        foreach ($sugestoes as &$sug) {
-            $sug['status_amizade'] = $amizadeModel->verificarStatus($usuario_logado_id, $sug['id']);
-            if (!empty($sug['academia_id'])) {
-                $academiaModel = new AcademiaModel();
-                $acad = $academiaModel->buscarPorId($sug['academia_id']);
-                $sug['academia_nome'] = $acad ? $acad['nome'] : '';
-            } else {
-                $sug['academia_nome'] = '';
-            }
-        }
-
-        require_once __DIR__ . '/../views/usuario/pesquisar.php';
     }
 }

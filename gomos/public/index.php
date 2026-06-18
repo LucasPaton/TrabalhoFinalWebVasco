@@ -108,9 +108,9 @@ addRoute('POST', '/amigos/adicionar/{id}', 'App\Controllers\UsuarioController@ad
 addRoute('POST', '/amigos/aceitar/{id}', 'App\Controllers\UsuarioController@aceitarAmigo');
 addRoute('POST', '/amigos/recusar/{id}', 'App\Controllers\UsuarioController@recusarAmigo');
 
-// Busca de Usuários (AJAX)
-addRoute('GET', '/usuarios/buscar', 'App\Controllers\UsuarioController@buscar');
-addRoute('GET', '/usuarios/pesquisar', 'App\Controllers\UsuarioController@pesquisar');
+// Busca de Treinos
+addRoute('GET', '/treinos/buscar', 'App\Controllers\TreinoController@buscar');
+addRoute('GET', '/treinos/pesquisar', 'App\Controllers\TreinoController@pesquisar');
 
 // Treinos
 addRoute('GET', '/treino/criar', 'App\Controllers\TreinoController@criarPagina');

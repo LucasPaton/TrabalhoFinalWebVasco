@@ -65,10 +65,30 @@ class TreinoController {
 
         // Montar array de exercícios formatados
         $exercicios = [];
+        $exModel = new ExercicioModel();
         for ($i = 0; $i < count($nomes_exercicios); $i++) {
             if (!empty($nomes_exercicios[$i])) {
+                $nome_ex = Validator::sanitize($nomes_exercicios[$i]);
+                
+                // Verificar se o exercício já existe no catálogo
+                $db = \App\Config\Database::getConnection();
+                $stmt_check = $db->prepare("SELECT COUNT(*) FROM exercicios_catalogo WHERE LOWER(nome) = LOWER(:nome)");
+                $stmt_check->execute([':nome' => $nome_ex]);
+                $existe = $stmt_check->fetchColumn() > 0;
+                
+                if (!$existe) {
+                    // Inserir no catálogo dinamicamente
+                    $exModel->criar([
+                        'nome' => $nome_ex,
+                        'grupo_muscular' => $grupo_muscular, // Usa o grupo muscular do treino como grupo do exercício
+                        'equipamento' => 'Outros',
+                        'descricao' => 'Cadastrado dinamicamente ao criar ficha de treino.',
+                        'aprovado' => 1 // Aprovado automaticamente para constar no autocomplete do site
+                    ]);
+                }
+
                 $exercicios[] = [
-                    'nome_exercicio' => Validator::sanitize($nomes_exercicios[$i]),
+                    'nome_exercicio' => $nome_ex,
                     'series' => Validator::sanitizeInt($series_arr[$i] ?? 3),
                     'repeticoes' => Validator::sanitize($repeticoes_arr[$i] ?? '10'),
                     'peso_kg' => Validator::sanitizeFloat($pesos_arr[$i] ?? 0.00),
@@ -303,5 +323,68 @@ class TreinoController {
         }
 
         require_once __DIR__ . '/../views/treino/comparar.php';
+    }
+
+    /**
+     * Busca de treinos por AJAX (retorna JSON para a sidebar).
+     * Endpoint: GET /treinos/buscar?q=termo
+     */
+    public function buscar() {
+        Session::check();
+        $usuario_id = Session::get('usuario_id');
+        $query = trim($_GET['q'] ?? '');
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (strlen($query) < 2) {
+            echo json_encode(['resultados' => []]);
+            exit();
+        }
+
+        $treinoModel = new TreinoModel();
+        $resultados = $treinoModel->pesquisarTreinos($query, $usuario_id);
+
+        $root = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+        $rootUrl = rtrim($root, '/public');
+
+        $formatados = [];
+        foreach ($resultados as $r) {
+            $formatados[] = [
+                'id' => $r['id'],
+                'titulo' => $r['titulo'],
+                'grupo_muscular' => $r['grupo_muscular'],
+                'username' => $r['username'],
+                'treino_url' => $rootUrl . '/treino/' . $r['id']
+            ];
+        }
+
+        echo json_encode(['resultados' => $formatados]);
+        exit();
+    }
+
+    /**
+     * Tela dedicada de pesquisa de treinos.
+     * Endpoint: GET /treinos/pesquisar?q=termo
+     */
+    public function pesquisar() {
+        Session::check();
+        $usuario_id = Session::get('usuario_id');
+        $query = trim($_GET['q'] ?? '');
+
+        $treinos = [];
+        $treinoModel = new TreinoModel();
+
+        if (strlen($query) >= 2) {
+            $treinos = $treinoModel->pesquisarTreinos($query, $usuario_id);
+            
+            // Carregar preview dos exercícios para cada treino
+            foreach ($treinos as &$t) {
+                $t['exercicios_preview'] = $treinoModel->buscarExercicios($t['id']);
+                $t['total_exercicios'] = count($t['exercicios_preview']);
+                $t['exercicios_preview'] = array_slice($t['exercicios_preview'], 0, 3);
+            }
+        }
+
+        require_once __DIR__ . '/../views/treino/pesquisar.php';
     }
 }
