@@ -1,5 +1,5 @@
 <?php 
-$pageTitle = "Buscar Academias";
+$pageTitle = "Unidades GOMOS";
 $root = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 $rootUrl = rtrim($root, '/public');
 require_once __DIR__ . '/../partials/header.php';
@@ -21,8 +21,8 @@ $usuarioAcademiaId = \App\Helpers\Session::get('academia_id');
                 <div class="col-lg-7">
                     <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary pb-3">
                         <div>
-                            <h2 class="text-white m-0">DESCOBRIR <span class="text-orange">ACADEMIAS</span></h2>
-                            <p class="text-secondary m-0">Encontre academias próximas e veja quem treina nelas.</p>
+                            <h2 class="text-white m-0">UNIDADES <span class="text-orange">GOMOS</span></h2>
+                            <p class="text-secondary m-0">Encontre as unidades da rede GOMOS e veja quem treina nelas.</p>
                         </div>
                     </div>
 
@@ -31,7 +31,7 @@ $usuarioAcademiaId = \App\Helpers\Session::get('academia_id');
                         <form action="<?= $rootUrl ?>/academias" method="GET">
                             <div class="row g-2">
                                 <div class="col-md-5">
-                                    <input type="text" name="nome" class="form-control form-control-gomos" placeholder="Nome da academia..." value="<?= isset($_GET['nome']) ? htmlspecialchars($_GET['nome']) : '' ?>">
+                                    <input type="text" name="nome" class="form-control form-control-gomos" placeholder="Buscar unidade..." value="<?= isset($_GET['nome']) ? htmlspecialchars($_GET['nome']) : '' ?>">
                                 </div>
                                 <div class="col-md-4 col-7">
                                     <input type="text" name="cidade" class="form-control form-control-gomos" placeholder="Cidade..." value="<?= isset($_GET['cidade']) ? htmlspecialchars($_GET['cidade']) : '' ?>">
@@ -106,10 +106,10 @@ $usuarioAcademiaId = \App\Helpers\Session::get('academia_id');
                             <!-- Frequência / Ações de Vínculo -->
                             <div class="d-flex gap-2 mb-4">
                                 <?php if ($usuarioAcademiaId == $academia['id']): ?>
-                                    <button class="btn btn-outline-secondary w-100 py-3" disabled><i class="fa-solid fa-house-chimney text-lime"></i> ESTA É SUA ACADEMIA</button>
+                                    <button class="btn btn-outline-secondary w-100 py-3" disabled><i class="fa-solid fa-house-chimney text-lime"></i> ESTA É SUA UNIDADE</button>
                                 <?php else: ?>
                                     <form action="<?= $rootUrl ?>/academias/vincular/<?= $academia['id'] ?>" method="POST" class="w-100 m-0">
-                                        <button type="submit" class="btn btn-secondary-gomos text-dark w-100 py-3"><i class="fa-solid fa-house-laptop"></i> DEFINE COMO MINHA ACADEMIA</button>
+                                        <button type="submit" class="btn btn-secondary-gomos text-dark w-100 py-3"><i class="fa-solid fa-house-laptop"></i> DEFINIR COMO MINHA UNIDADE</button>
                                     </form>
                                 <?php endif; ?>
                             </div>
@@ -120,7 +120,7 @@ $usuarioAcademiaId = \App\Helpers\Session::get('academia_id');
                             </button>
 
                             <!-- Lista de Membros do Gomos na Academia -->
-                            <h5 class="text-white border-bottom border-secondary pb-2 mb-3"><i class="fa-solid fa-user-group text-lime me-2"></i> ATLETAS DA ACADEMIA (<?= count($membros) ?>)</h5>
+                             <h5 class="text-white border-bottom border-secondary pb-2 mb-3"><i class="fa-solid fa-user-group text-lime me-2"></i> ATLETAS DA UNIDADE (<?= count($membros) ?>)</h5>
                             <div class="gym-members" style="max-height: 250px; overflow-y: auto;">
                                 <?php if (!empty($membros)): ?>
                                     <ul class="list-unstyled m-0">
@@ -140,7 +140,7 @@ $usuarioAcademiaId = \App\Helpers\Session::get('academia_id');
                                         <?php endforeach; ?>
                                     </ul>
                                 <?php else: ?>
-                                    <p class="text-secondary small m-0 py-2">Seja o primeiro membro desta academia!</p>
+                                    <p class="text-secondary small m-0 py-2">Seja o primeiro membro desta unidade!</p>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -148,7 +148,7 @@ $usuarioAcademiaId = \App\Helpers\Session::get('academia_id');
                     <?php else: ?>
                         <!-- Nenhuma Academia Selecionada - Mostrar Mais Frequentadas do Mês -->
                         <div class="card-gomos p-4">
-                            <h4 class="text-white border-bottom border-secondary pb-2 mb-3"><i class="fa-solid fa-fire text-orange me-2"></i> ACADEMIAS POPULARES DO MÊS</h4>
+                             <h4 class="text-white border-bottom border-secondary pb-2 mb-3"><i class="fa-solid fa-fire text-orange me-2"></i> UNIDADES POPULARES DO MÊS</h4>
                             <p class="text-secondary small mb-4">Classificação baseada no total de check-ins acumulados no mês corrente.</p>
                             
                             <div class="ranking-preview-list">

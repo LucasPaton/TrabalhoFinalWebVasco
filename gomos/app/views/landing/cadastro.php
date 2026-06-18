@@ -31,7 +31,7 @@ require_once __DIR__ . '/../partials/navbar.php';
                             </div>
                             <div class="text-center step-indicator" id="indicator-3">
                                 <span class="badge rounded-circle text-white p-3 d-inline-flex align-items-center justify-content-center" style="font-size: 1.1rem; width: 45px; height: 45px; background-color: #262626; border: 3px solid #1A1A1A; transition: all 0.3s ease;">3</span>
-                                <div class="small text-muted mt-2 d-none d-md-block" style="transition: all 0.3s ease;">Academia</div>
+                                <div class="small text-muted mt-2 d-none d-md-block" style="transition: all 0.3s ease;">Unidade GOMOS</div>
                             </div>
                         </div>
                     </div>
@@ -133,7 +133,7 @@ require_once __DIR__ . '/../partials/navbar.php';
 
                         <!-- ETAPA 3: ACADEMIA -->
                         <div class="step-pane d-none" id="step-3">
-                            <h4 class="text-lime border-bottom border-secondary pb-2 mb-4">Etapa 3 — Localização e Academia</h4>
+                            <h4 class="text-lime border-bottom border-secondary pb-2 mb-4">Etapa 3 — Localização e Unidade GOMOS</h4>
 
                             <!-- Cidade e Estado -->
                             <div class="row mb-3">
@@ -158,14 +158,14 @@ require_once __DIR__ . '/../partials/navbar.php';
 
                             <!-- Seleção de Academia -->
                             <div class="mb-4">
-                                <label for="academia_id" class="form-label text-muted-gomos">Qual academia você frequenta?</label>
+                                <label for="academia_id" class="form-label text-muted-gomos">Qual unidade da GOMOS você frequenta?</label>
                                 <select name="academia_id" id="academia_id" class="form-select form-select-gomos">
-                                    <option value="">Busque ou selecione uma academia...</option>
+                                    <option value="">Busque ou selecione uma unidade...</option>
                                     <?php foreach ($academias as $academia): ?>
                                         <option value="<?= $academia['id'] ?>"><?= $academia['nome'] ?> - <?= $academia['cidade'] ?>/<?= $academia['estado'] ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                <div class="form-text text-secondary mt-1">Você poderá alterar ou vincular uma academia depois na busca.</div>
+                                <div class="form-text text-secondary mt-1">Você poderá alterar ou vincular uma unidade depois na busca.</div>
                             </div>
 
                             <div class="d-flex justify-content-between">

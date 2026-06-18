@@ -110,6 +110,7 @@ addRoute('POST', '/amigos/recusar/{id}', 'App\Controllers\UsuarioController@recu
 
 // Busca de Usuários (AJAX)
 addRoute('GET', '/usuarios/buscar', 'App\Controllers\UsuarioController@buscar');
+addRoute('GET', '/usuarios/pesquisar', 'App\Controllers\UsuarioController@pesquisar');
 
 // Treinos
 addRoute('GET', '/treino/criar', 'App\Controllers\TreinoController@criarPagina');

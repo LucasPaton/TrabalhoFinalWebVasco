@@ -77,9 +77,14 @@ $uri = $_SERVER['REQUEST_URI'];
                     <i class="fa-solid fa-trophy"></i> Rankings
                 </a>
             </li>
+            <li class="sidebar-menu-item <?= (strpos($uri, '/usuarios/pesquisar') !== false) ? 'active' : '' ?>">
+                <a href="<?= $rootUrl ?>/usuarios/pesquisar">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar Atletas
+                </a>
+            </li>
             <li class="sidebar-menu-item <?= (strpos($uri, '/academias') !== false) ? 'active' : '' ?>">
                 <a href="<?= $rootUrl ?>/academias">
-                    <i class="fa-solid fa-location-dot"></i> Buscar Academias
+                    <i class="fa-solid fa-location-dot"></i> Unidades GOMOS
                 </a>
             </li>
         <?php endif; ?>
@@ -110,6 +115,16 @@ document.addEventListener('DOMContentLoaded', function() {
     let timerBusca = null;
 
     if (!inputBusca) return;
+
+    // Redirecionar ao apertar Enter
+    inputBusca.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const query = this.value.trim();
+            if (query.length >= 2) {
+                window.location.href = rootPath + '/usuarios/pesquisar?q=' + encodeURIComponent(query);
+            }
+        }
+    });
 
     inputBusca.addEventListener('input', function() {
         const query = this.value.trim();
@@ -144,6 +159,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             html += '  </div>';
                             html += '</a>';
                         });
+                        
+                        // Item de ver todos os resultados no final
+                        html += '<a href="' + rootPath + '/usuarios/pesquisar?q=' + encodeURIComponent(query) + '" class="search-result-item text-center justify-content-center text-orange fw-bold border-top border-secondary">';
+                        html += '  <i class="fa-solid fa-magnifying-glass me-2"></i> Ver todos os resultados';
+                        html += '</a>';
+                        
                         containerResultados.innerHTML = html;
                     } else {
                         containerResultados.innerHTML = '<div class="search-no-results"><i class="fa-solid fa-user-xmark"></i> Nenhum atleta encontrado.</div>';

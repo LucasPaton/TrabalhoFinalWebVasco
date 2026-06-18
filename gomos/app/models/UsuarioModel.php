@@ -287,14 +287,15 @@ class UsuarioModel {
      * Pesquisa usuários por nome ou username.
      */
     public function pesquisarUsuarios($query, $usuario_logado_id) {
-        $sql = "SELECT id, nome, username, foto_perfil, cidade, estado 
+        $sql = "SELECT id, nome, username, foto_perfil, cidade, estado, academia_id, nivel_fitness, pontos_ranking 
                 FROM usuarios 
-                WHERE (nome LIKE :query OR username LIKE :query) 
+                WHERE (nome LIKE :query1 OR username LIKE :query2) 
                   AND id != :usuario_id AND ativo = 1 
                 LIMIT 10";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':query' => '%' . $query . '%',
+            ':query1' => '%' . $query . '%',
+            ':query2' => '%' . $query . '%',
             ':usuario_id' => $usuario_logado_id
         ]);
         return $stmt->fetchAll();

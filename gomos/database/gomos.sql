@@ -186,20 +186,20 @@ CREATE TABLE IF NOT EXISTS admin_usuarios (
 
 -- 1. Inserir Academias
 INSERT INTO academias (nome, endereco, cidade, estado, cep, telefone, site, foto, total_membros, avaliacao_media, verificada) VALUES
-('Ironberg CT', 'Av. Paulista, 1000', 'São Paulo', 'SP', '01311-000', '(11) 99999-8888', 'https://ironberg.com.br', 'ironberg.jpg', 2, 4.9, 1),
-('Bluefit Centro', 'Rua XV de Novembro, 200', 'Curitiba', 'PR', '80020-300', '(41) 3333-2222', 'https://bluefit.com.br', 'bluefit.jpg', 1, 4.2, 0),
-('Smart Fit Botafogo', 'Rua Voluntários da Pátria, 150', 'Rio de Janeiro', 'RJ', '22270-010', '(21) 2222-1111', 'https://smartfit.com.br', 'smartfit.jpg', 1, 4.0, 1),
-('Gaviões 24h', 'Av. Cruzeiro do Sul, 3000', 'São Paulo', 'SP', '02030-000', '(11) 3333-4444', 'https://academiasgavioes.com.br', 'gavioes.jpg', 1, 4.5, 1);
+('Gomos CT Principal', 'Av. Dante Michelini, 1000', 'Vitória', 'ES', '29060-010', '(27) 3333-1111', 'https://gomos.com.br', 'default_academia.jpg', 3, 4.9, 1),
+('Gomos Jardim Camburi', 'Av. Ranulpho Barbosa dos Santos, 500', 'Vitória', 'ES', '29090-120', '(27) 3333-2222', 'https://gomos.com.br', 'default_academia.jpg', 1, 4.7, 1),
+('Gomos Praia do Canto', 'Rua Joaquim Lírio, 250', 'Vitória', 'ES', '29055-460', '(27) 3333-3333', 'https://gomos.com.br', 'default_academia.jpg', 1, 4.8, 1),
+('Gomos Vila Velha', 'Av. Estudante José Júlio de Souza, 800', 'Vila Velha', 'ES', '29102-010', '(27) 3333-4444', 'https://gomos.com.br', 'default_academia.jpg', 1, 4.6, 1);
 
 -- 2. Inserir Usuários
 -- Senha de todos: '123456'
 INSERT INTO usuarios (nome, username, email, senha, foto_perfil, bio, nivel_fitness, academia_id, cidade, estado, peso, altura, total_treinos, total_curtidas, pontos_ranking) VALUES
-('Ramon Dino', 'ramondino', 'ramon@dino.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'ramon.jpg', 'Em busca do Mr. Olympia. Treino pesado todo dia.', 'avancado', 1, 'São Paulo', 'SP', 105.50, 181, 2, 5, 120),
-('Renato Cariani', 'rcariani', 'renato@cariani.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'cariani.jpg', 'Professor de química que ama musculação. Foco e disciplina.', 'avancado', 1, 'São Paulo', 'SP', 96.00, 180, 1, 4, 95),
-('Julio Balestrin', 'julinho', 'julio@balestrin.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'julio.jpg', 'Treinador dos monstros. Aqui o treino é até a falha.', 'avancado', 4, 'São Paulo', 'SP', 115.00, 185, 1, 3, 80),
-('Felipe Franco', 'fefranco', 'felipe@franco.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'felipe.jpg', 'Vem monstro! Quem não esmaga não cresce.', 'avancado', 3, 'Rio de Janeiro', 'RJ', 92.50, 180, 1, 2, 70),
-('Carol Borba', 'carolborba', 'carol@borba.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'carol.jpg', 'Profissional de E.F., dicas de treino em casa e academia!', 'intermediario', 2, 'Curitiba', 'PR', 62.00, 168, 1, 1, 45),
-('Lucas Paton', 'lucaspaton', 'lcspaton@gmail.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'default_avatar.png', 'Focando na hipertrofia e na consistência.', 'iniciante', 1, 'São Paulo', 'SP', 78.00, 175, 1, 0, 15);
+('Ramon Dino', 'ramondino', 'ramon@dino.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'ramon.jpg', 'Em busca do Mr. Olympia. Treino pesado todo dia.', 'avancado', 1, 'Vitória', 'ES', 105.50, 181, 2, 5, 120),
+('Renato Cariani', 'rcariani', 'renato@cariani.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'cariani.jpg', 'Professor de química que ama musculação. Foco e disciplina.', 'avancado', 1, 'Vitória', 'ES', 96.00, 180, 1, 4, 95),
+('Julio Balestrin', 'julinho', 'julio@balestrin.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'julio.jpg', 'Treinador dos monstros. Aqui o treino é até a falha.', 'avancado', 4, 'Vila Velha', 'ES', 115.00, 185, 1, 3, 80),
+('Felipe Franco', 'fefranco', 'felipe@franco.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'felipe.jpg', 'Vem monstro! Quem não esmaga não cresce.', 'avancado', 3, 'Vitória', 'ES', 92.50, 180, 1, 2, 70),
+('Carol Borba', 'carolborba', 'carol@borba.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'carol.jpg', 'Profissional de E.F., dicas de treino em casa e academia!', 'intermediario', 2, 'Vitória', 'ES', 62.00, 168, 1, 1, 45),
+('Lucas Paton', 'lucaspaton', 'lcspaton@gmail.com', '$2y$10$OvvNjg/OrA6KrZ9BWILAvOQWbijR4MDu5Qq464JELs1zpyt9V2Be.', 'default_avatar.png', 'Focando na hipertrofia e na consistência.', 'iniciante', 1, 'Vitória', 'ES', 78.00, 175, 1, 0, 15);
 
 -- 3. Atualizar total de membros nas academias correspondentes
 UPDATE academias SET total_membros = 3 WHERE id = 1; -- Ramon, Cariani, Lucas
