@@ -14,10 +14,13 @@ $uri = $_SERVER['REQUEST_URI'];
 
 <div class="sidebar-gomos">
     <!-- Brand Logo -->
-    <div class="sidebar-brand text-center d-flex align-items-center justify-content-center">
+    <div class="sidebar-brand d-flex align-items-center justify-content-between px-3">
         <a href="<?= $rootUrl ?>/feed" class="text-decoration-none">
             <h3 class="m-0 text-white brand-font"><span class="text-orange">G</span>OMOS <i class="fa-solid fa-dumbbell text-orange"></i></h3>
         </a>
+        <button type="button" class="btn-toggle-sidebar" id="btn-toggle-sidebar" title="Recolher Menu">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
     </div>
 
     <!-- User Profile Header in Sidebar -->
@@ -193,7 +196,58 @@ document.addEventListener('DOMContentLoaded', function() {
             containerResultados.classList.add('show');
         }
     });
+
+    // === Lógica de Recolhimento da Sidebar ===
+    const btnToggle = document.getElementById('btn-toggle-sidebar');
+    const btnReopen = document.getElementById('btn-reopen-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const wrapper = document.querySelector('.dashboard-wrapper');
+
+    // Inicialização da persistência do estado da sidebar no Desktop
+    if (localStorage.getItem('sidebarCollapsed') === '1' && window.innerWidth >= 992) {
+        if (wrapper) wrapper.classList.add('sidebar-collapsed');
+    }
+
+    if (btnToggle) {
+        btnToggle.addEventListener('click', function() {
+            if (window.innerWidth >= 992) {
+                if (wrapper) {
+                    wrapper.classList.add('sidebar-collapsed');
+                    localStorage.setItem('sidebarCollapsed', '1');
+                }
+            } else {
+                if (wrapper) wrapper.classList.remove('sidebar-mobile-active');
+            }
+        });
+    }
+
+    if (btnReopen) {
+        btnReopen.addEventListener('click', function() {
+            if (window.innerWidth >= 992) {
+                if (wrapper) {
+                    wrapper.classList.remove('sidebar-collapsed');
+                    localStorage.setItem('sidebarCollapsed', '0');
+                }
+            } else {
+                if (wrapper) wrapper.classList.add('sidebar-mobile-active');
+            }
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', function() {
+            if (wrapper) wrapper.classList.remove('sidebar-mobile-active');
+        });
+    }
 });
 </script>
+
+<!-- Botão flutuante para reabrir a sidebar -->
+<button type="button" class="btn-reopen-sidebar" id="btn-reopen-sidebar" title="Expandir Menu">
+    <i class="fa-solid fa-bars"></i>
+</button>
+
+<!-- Overlay para cliques em mobile -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 <?php endif; ?>
 

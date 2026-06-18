@@ -345,3 +345,150 @@
     color: var(--accent-primary);
     border-bottom-color: var(--accent-primary);
 }
+
+/* ==========================================
+   SIDEBAR RECOLHÍVEL & DESIGN MOBILE (HEVY STYLE)
+   ========================================== */
+
+/* Botão de Toggle na Sidebar */
+.btn-toggle-sidebar {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-toggle-sidebar:hover {
+    color: var(--accent-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Botão flutuante para reabrir a sidebar */
+.btn-reopen-sidebar {
+    position: fixed;
+    left: 15px;
+    top: 15px;
+    z-index: 1040;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--accent-primary);
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    display: none; /* Escondido por padrão no desktop */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: all 0.2s ease;
+}
+.btn-reopen-sidebar:hover {
+    background: var(--accent-primary);
+    color: #121212;
+}
+
+/* Comportamento no Desktop quando Colapsado */
+@media (min-width: 992px) {
+    .dashboard-wrapper.sidebar-collapsed .sidebar-gomos {
+        transform: translateX(-280px);
+    }
+    .dashboard-wrapper.sidebar-collapsed .main-content-gomos {
+        margin-left: 0 !important;
+    }
+    .dashboard-wrapper.sidebar-collapsed .btn-reopen-sidebar {
+        display: flex;
+    }
+    /* Ajusta a barra do tracker de treino */
+    .dashboard-wrapper.sidebar-collapsed .tracker-header-fixed {
+        left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* Comportamento Responsivo Mobile Completo */
+@media (max-width: 991px) {
+    /* Forçar a sidebar a ser lateral oculta em vez de topo horizontal */
+    .sidebar-gomos {
+        position: fixed !important;
+        left: -280px !important;
+        width: 280px !important;
+        height: 100vh !important;
+        z-index: 1050 !important;
+        box-shadow: 5px 0 25px rgba(0,0,0,0.8);
+        border-right: 1px solid var(--border-color);
+        transform: none !important;
+        transition: left 0.3s ease-in-out !important;
+    }
+    
+    .sidebar-menu {
+        display: flex !important;
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
+        padding: 20px 0 !important;
+        overflow-y: auto !important;
+        height: calc(100vh - 160px) !important;
+    }
+    
+    .sidebar-menu-item a {
+        padding: 12px 25px !important;
+        border-left: 4px solid transparent !important;
+        border-bottom: none !important;
+    }
+    
+    .sidebar-menu-item.active a {
+        background-color: rgba(255, 107, 0, 0.1) !important;
+        border-left-color: var(--accent-primary) !important;
+        border-bottom-color: transparent !important;
+    }
+
+    .main-content-gomos {
+        margin-left: 0 !important;
+        padding: 15px !important;
+    }
+
+    /* Mostrar botão de toggle sempre no mobile */
+    .btn-reopen-sidebar {
+        display: flex !important;
+    }
+
+    /* Quando a sidebar está ativa (aberta) no mobile */
+    .dashboard-wrapper.sidebar-mobile-active .sidebar-gomos {
+        left: 0 !important;
+    }
+
+    /* Overlay escuro de fundo no mobile */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1045;
+        display: none;
+    }
+    .dashboard-wrapper.sidebar-mobile-active .sidebar-overlay {
+        display: block;
+    }
+    
+    /* Ajustes na barra superior do tracker no mobile */
+    .tracker-header-fixed {
+        padding: 10px 0 !important;
+    }
+    .tracker-header-fixed h3 {
+        font-size: 1.25rem !important;
+    }
+    .timer-text {
+        font-size: 1.5rem !important;
+    }
+    .btn-primary-gomos {
+        padding: 6px 12px !important;
+        font-size: 0.85rem !important;
+    }
+}

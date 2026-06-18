@@ -12,7 +12,7 @@ require_once __DIR__ . '/../partials/header.php';
     backdrop-filter: blur(10px);
     border-bottom: 2px solid var(--accent-primary);
     position: sticky;
-    top: 56px;
+    top: 0;
     z-index: 1020;
     padding: 15px 0;
 }
