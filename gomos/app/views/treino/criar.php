@@ -17,7 +17,7 @@ require_once __DIR__ . '/../partials/header.php';
             <div class="d-flex align-items-center justify-content-between mb-4 border-bottom border-secondary pb-3">
                 <div>
                     <h2 class="text-white m-0">CONSTRUTOR DE <span class="text-orange">TREINO</span></h2>
-                    <p class="text-secondary m-0">Monte sua ficha de exercícios e publique para a rede.</p>
+                    <p class="text-secondary m-0">Monte sua ficha de exercícios e salve em seu perfil.</p>
                 </div>
                 <a href="<?= $rootUrl ?>/feed" class="btn btn-outline-gomos btn-sm border-secondary text-secondary"><i class="fa-solid fa-arrow-left"></i> CANCELAR</a>
             </div>
@@ -68,19 +68,6 @@ require_once __DIR__ . '/../partials/header.php';
                                     <option value="intermediario" selected>Intermediário</option>
                                     <option value="avancado">Avançado / Elite</option>
                                 </select>
-                            </div>
-
-                            <!-- Visibilidade Pública -->
-                            <div class="mb-3">
-                                <label class="form-label text-muted-gomos d-block">Visibilidade</label>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input bg-dark border-secondary" type="radio" name="publico" id="publico_sim" value="1" checked>
-                                    <label class="form-check-label text-white small" for="publico_sim">Público (Aparece no Feed)</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input bg-dark border-secondary" type="radio" name="publico" id="publico_nao" value="0">
-                                    <label class="form-check-label text-white small" for="publico_nao">Privado (Apenas meu)</label>
-                                </div>
                             </div>
 
                             <!-- Descrição -->

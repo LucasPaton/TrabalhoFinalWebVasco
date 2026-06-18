@@ -72,6 +72,12 @@ require_once __DIR__ . '/../partials/header.php';
                                         <h4 class="text-orange mb-2"><?= $t['titulo'] ?></h4>
                                         <p class="text-white-50 mb-3"><?= $t['descricao'] ?></p>
 
+                                        <?php if (!empty($t['foto'])): ?>
+                                            <div class="mb-3 text-center">
+                                                <img src="<?= $root ?>/assets/img/<?= $t['foto'] ?>" alt="Foto do Treino" class="img-fluid rounded" style="max-height: 350px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);">
+                                            </div>
+                                        <?php endif; ?>
+
                                         <!-- Tags do Treino -->
                                         <div class="d-flex gap-2 mb-3">
                                             <span class="badge bg-dark border border-secondary text-secondary py-2 px-3"><i class="fa-solid fa-dumbbell me-1 text-orange"></i> Divisão: <?= $t['tipo_treino'] ?></span>
@@ -121,6 +127,14 @@ require_once __DIR__ . '/../partials/header.php';
                                         <a href="<?= $rootUrl ?>/treino/<?= $t['id'] ?>#comentarios" class="feed-post-action-btn text-decoration-none">
                                             <i class="fa-regular fa-comment me-1"></i> <span><?= $t['total_comentarios'] ?></span>
                                         </a>
+
+                                        <?php if ($t['usuario_id'] != \App\Helpers\Session::get('usuario_id')): ?>
+                                            <form action="<?= $rootUrl ?>/treino/copiar/<?= $t['id'] ?>" method="POST" class="m-0 d-inline">
+                                                <button type="submit" class="feed-post-action-btn text-lime border-0 bg-transparent">
+                                                    <i class="fa-solid fa-copy me-1"></i> Copiar Ficha
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
 
                                         <button class="feed-post-action-btn" onclick="navigator.clipboard.writeText('<?= $_SERVER['HTTP_HOST'] . $rootUrl ?>/treino/<?= $t['id'] ?>'); alert('Link do treino copiado para a área de transferência!');">
                                             <i class="fa-regular fa-share-from-square"></i> Compartilhar

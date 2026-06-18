@@ -141,50 +141,150 @@ require_once __DIR__ . '/../partials/header.php';
 
                 </div>
 
-                <!-- Coluna Direita (Histórico de Treinos) -->
+                <!-- Coluna Direita (Abas de Treinos) -->
                 <div class="col-lg-7">
-                    
-                    <!-- Histórico de Treinos -->
-                    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom border-secondary pb-2">
-                        <h4 class="text-white m-0"><i class="fa-solid fa-clock-rotate-left text-orange me-2"></i> HISTÓRICO DE TREINOS</h4>
-                        <span class="text-secondary small">Total: <?= count($treinos) ?> treinos</span>
-                    </div>
+                    <style>
+                    .nav-pills .nav-link.active {
+                        background-color: var(--accent-primary) !important;
+                        color: #000 !important;
+                    }
+                    .nav-pills .nav-link {
+                        border-radius: 4px;
+                        transition: all 0.2s ease;
+                    }
+                    .nav-pills .nav-link:hover:not(.active) {
+                        background-color: rgba(255, 107, 0, 0.1);
+                        color: var(--accent-primary) !important;
+                    }
+                    </style>
 
-                    <?php if (!empty($treinos)): ?>
-                        <?php foreach ($treinos as $t): ?>
-                            <div class="card-gomos mb-3 p-3">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <h5 class="text-orange m-0"><a href="<?= $rootUrl ?>/treino/<?= $t['id'] ?>" class="text-orange text-decoration-none fw-bold"><?= $t['titulo'] ?></a></h5>
-                                        <span class="text-muted-gomos small"><?= date('d/m/Y', strtotime($t['criado_em'])) ?> • Divisão: <?= $t['tipo_treino'] ?></span>
+                    <!-- Tabs de Navegação -->
+                    <ul class="nav nav-pills nav-fill mb-4 border border-secondary p-1 rounded bg-black" id="profileTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active text-white fw-bold py-2 px-3 border-0 bg-transparent" id="realizados-tab" data-bs-toggle="pill" data-bs-target="#realizados-content" type="button" role="tab" aria-controls="realizados-content" aria-selected="true">
+                                <i class="fa-solid fa-clock-rotate-left me-2"></i> HISTÓRICO DE TREINOS (<?= count($realizados) ?>)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link text-white fw-bold py-2 px-3 border-0 bg-transparent" id="fichas-tab" data-bs-toggle="pill" data-bs-target="#fichas-content" type="button" role="tab" aria-controls="fichas-content" aria-selected="false">
+                                <i class="fa-solid fa-file-lines me-2"></i> MINHAS FICHAS (<?= count($fichas) ?>)
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="profileTabsContent">
+                        <!-- Aba de Treinos Realizados (Histórico) -->
+                        <div class="tab-pane fade show active" id="realizados-content" role="tabpanel" aria-labelledby="realizados-tab">
+                            <?php if (!empty($realizados)): ?>
+                                <?php foreach ($realizados as $t): ?>
+                                    <div class="card-gomos mb-3 p-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h5 class="text-orange m-0"><a href="<?= $rootUrl ?>/treino/<?= $t['id'] ?>" class="text-orange text-decoration-none fw-bold"><?= $t['titulo'] ?></a></h5>
+                                                <span class="text-muted-gomos small"><?= date('d/m/Y H:i', strtotime($t['criado_em'])) ?> • Divisão: <?= $t['tipo_treino'] ?> • <i class="fa-solid fa-clock"></i> <?= $t['duracao_minutos'] ?> min</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="text-secondary small" title="Público">
+                                                    <i class="fa-solid fa-earth-americas"></i>
+                                                </span>
+                                                <form action="<?= $rootUrl ?>/treino/excluir/<?= $t['id'] ?>" method="POST" onsubmit="return confirm('Deseja realmente excluir este post de treino realizado?');" class="m-0">
+                                                    <button type="submit" class="btn btn-link text-danger p-0 border-0" title="Excluir Post"><i class="fa-solid fa-trash-can"></i></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <p class="text-white-50 small mb-2"><?= $t['descricao'] ?></p>
+                                        
+                                        <?php if (!empty($t['foto'])): ?>
+                                            <div class="mb-3 text-center">
+                                                <img src="<?= $root ?>/assets/img/<?= $t['foto'] ?>" alt="Foto do Treino" class="img-fluid rounded" style="max-height: 250px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);">
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <!-- Preview de exercícios realizados -->
+                                        <div class="feed-post-exercises bg-dark p-2 rounded mb-2" style="font-size: 0.8rem;">
+                                            <span class="text-lime fw-bold d-block mb-1 small uppercase"><i class="fa-solid fa-list-check me-1"></i> Séries Efetivas:</span>
+                                            <table class="table table-dark table-sm m-0 table-borderless" style="font-size: 0.75rem;">
+                                                <tbody>
+                                                    <?php foreach ($t['exercicios_preview'] as $ex): ?>
+                                                        <tr>
+                                                            <td class="fw-bold"><?= $ex['nome_exercicio'] ?></td>
+                                                            <td class="text-center"><?= $ex['series'] ?> séries</td>
+                                                            <td class="text-end text-lime fw-semibold"><?= $ex['peso_kg'] ?> kg x <?= $ex['repeticoes'] ?> reps</td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
+                                            <?php if ($t['total_exercicios'] > 3): ?>
+                                                <div class="text-center mt-2 border-top border-secondary pt-1 small">
+                                                    <a href="<?= $rootUrl ?>/treino/<?= $t['id'] ?>" class="text-lime text-decoration-none fw-semibold">Ver todos os <?= $t['total_exercicios'] ?> exercícios...</a>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-secondary" style="border-style: dashed !important;">
+                                            <div class="small text-secondary">
+                                                <span><i class="fa-solid fa-heart text-orange"></i> <?= $t['total_curtidas'] ?></span>
+                                                <span class="ms-3"><i class="fa-solid fa-comment text-lime"></i> <?= $t['total_comentarios'] ?></span>
+                                            </div>
+                                            <a href="<?= $rootUrl ?>/treino/<?= $t['id'] ?>" class="btn btn-secondary-gomos btn-sm text-dark px-3 py-1" style="font-size: 0.75rem;">VER DETALHES</a>
+                                        </div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <!-- Visibilidade -->
-                                        <span class="text-secondary small" title="<?= $t['publico'] ? 'Público' : 'Privado' ?>">
-                                            <i class="fa-solid <?= $t['publico'] ? 'fa-earth-americas' : 'fa-lock text-warning' ?>"></i>
-                                        </span>
-                                        <!-- Botão de Excluir -->
-                                        <form action="<?= $rootUrl ?>/treino/excluir/<?= $t['id'] ?>" method="POST" onsubmit="return confirm('Deseja realmente excluir este treino? Esta ação não pode ser desfeita.');" class="m-0">
-                                            <button type="submit" class="btn btn-link text-danger p-0 border-0" title="Excluir Treino"><i class="fa-solid fa-trash-can"></i></button>
-                                        </form>
-                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="card-gomos text-center p-4">
+                                    <p class="text-secondary m-0">Você ainda não realizou nenhum treino.</p>
                                 </div>
-                                <p class="text-white-50 small mb-2 text-truncate"><?= $t['descricao'] ?></p>
-                                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary" style="border-style: dashed !important;">
-                                    <div class="small text-secondary">
-                                        <span><i class="fa-regular fa-heart"></i> <?= $t['total_curtidas'] ?></span>
-                                        <span class="ms-3"><i class="fa-regular fa-comment"></i> <?= $t['total_comentarios'] ?></span>
-                                    </div>
-                                    <a href="<?= $rootUrl ?>/treino/<?= $t['id'] ?>" class="btn btn-secondary-gomos btn-sm text-dark px-3 py-1" style="font-size: 0.75rem;">ABRIR FICHA</a>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="card-gomos text-center p-4">
-                            <p class="text-secondary m-0">Nenhum treino cadastrado neste histórico.</p>
-                            <a href="<?= $rootUrl ?>/treino/criar" class="btn btn-primary-gomos btn-sm mt-3">CRIAR FICHA AGORA</a>
+                            <?php endif; ?>
                         </div>
-                    <?php endif; ?>
+
+                        <!-- Aba de Fichas de Treino -->
+                        <div class="tab-pane fade" id="fichas-content" role="tabpanel" aria-labelledby="fichas-tab">
+                            <?php if (!empty($fichas)): ?>
+                                <?php foreach ($fichas as $t): ?>
+                                    <div class="card-gomos mb-3 p-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h5 class="text-orange m-0"><a href="<?= $rootUrl ?>/treino/<?= $t['id'] ?>" class="text-orange text-decoration-none fw-bold"><?= $t['titulo'] ?></a></h5>
+                                                <span class="text-muted-gomos small">Ficha cadastrada • Divisão: <?= $t['tipo_treino'] ?> • Grupo: <?= $t['grupo_muscular'] ?></span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="text-secondary small" title="Ficha Privada">
+                                                    <i class="fa-solid fa-lock text-warning"></i>
+                                                </span>
+                                                <form action="<?= $rootUrl ?>/treino/excluir/<?= $t['id'] ?>" method="POST" onsubmit="return confirm('Deseja realmente excluir esta ficha de treino?');" class="m-0">
+                                                    <button type="submit" class="btn btn-link text-danger p-0 border-0" title="Excluir Ficha"><i class="fa-solid fa-trash-can"></i></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <p class="text-white-50 small mb-2"><?= $t['descricao'] ?></p>
+
+                                        <!-- Resumo Exercícios da Ficha -->
+                                        <div class="bg-dark p-2 rounded mb-3 text-secondary" style="font-size: 0.8rem;">
+                                            <span class="text-white fw-bold d-block mb-1 small uppercase"><i class="fa-solid fa-dumbbell text-orange me-1"></i> Estrutura do Treino (<?= $t['total_exercicios'] ?> exercícios):</span>
+                                            <ul class="m-0 ps-3 small text-white-50">
+                                                <?php foreach (array_slice($t['exercicios'], 0, 3) as $ex): ?>
+                                                    <li><strong><?= $ex['nome_exercicio'] ?></strong>: <?= $ex['series'] ?> séries x <?= $ex['repeticoes'] ?> reps (<?= $ex['peso_kg'] ?> kg)</li>
+                                                <?php endforeach; ?>
+                                                <?php if ($t['total_exercicios'] > 3): ?>
+                                                    <li class="list-unstyled text-lime mt-1 fw-semibold">E mais <?= $t['total_exercicios'] - 3 ?> exercícios...</li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary" style="border-style: dashed !important;">
+                                            <a href="<?= $rootUrl ?>/treino/<?= $t['id'] ?>" class="btn btn-outline-gomos btn-sm border-secondary text-secondary px-3 py-1" style="font-size: 0.75rem;">VER DETALHES</a>
+                                            <a href="<?= $rootUrl ?>/treino/iniciar/<?= $t['id'] ?>" class="btn btn-primary-gomos btn-sm px-4 py-1" style="font-size: 0.75rem;"><i class="fa-solid fa-play text-dark me-1"></i> INICIAR TREINO</a>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="card-gomos text-center p-4">
+                                    <p class="text-secondary m-0">Nenhuma ficha cadastrada ainda.</p>
+                                    <a href="<?= $rootUrl ?>/treino/criar" class="btn btn-primary-gomos btn-sm mt-3"><i class="fa-solid fa-plus text-dark me-1"></i> CRIAR FICHA</a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
 
                 </div>
             </div>

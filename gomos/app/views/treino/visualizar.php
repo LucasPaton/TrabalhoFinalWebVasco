@@ -32,6 +32,12 @@ require_once __DIR__ . '/../partials/header.php';
                         <h2 class="text-white fw-bold mb-2"><?= $treino['titulo'] ?></h2>
                         <p class="text-white-50 mb-3"><?= $treino['descricao'] ?></p>
 
+                        <?php if (!empty($treino['foto'])): ?>
+                            <div class="mb-3 text-center text-md-start">
+                                <img src="<?= $root ?>/assets/img/<?= $treino['foto'] ?>" alt="Foto do Treino" class="img-fluid rounded" style="max-height: 400px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);">
+                            </div>
+                        <?php endif; ?>
+
                         <!-- Informações em Cards menores -->
                         <div class="d-flex flex-wrap gap-2">
                             <span class="badge bg-dark border border-secondary text-secondary py-2 px-3"><i class="fa-solid fa-dumbbell me-1 text-orange"></i> Divisão: <?= $treino['tipo_treino'] ?></span>

@@ -48,7 +48,7 @@ class TreinoController {
         $grupo_muscular = Validator::sanitize($_POST['grupo_muscular'] ?? '');
         $duracao_minutos = Validator::sanitizeInt($_POST['duracao_minutos'] ?? 0);
         $nivel_dificuldade = Validator::sanitize($_POST['nivel_dificuldade'] ?? 'iniciante');
-        $publico = isset($_POST['publico']) ? intval($_POST['publico']) : 1;
+        $publico = 0; // Forçado 0 (Ficha/Template, não publicado no Feed)
 
         // Exercícios dinâmicos vindos do formulário
         $nomes_exercicios = $_POST['exercicio_nome'] ?? [];
@@ -457,6 +457,66 @@ class TreinoController {
             exit();
         }
         
+        // 1. Processar Upload da Foto do Treino (se houver)
+        $foto_nome = null;
+        if (isset($_FILES['foto_treino']) && $_FILES['foto_treino']['error'] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES['foto_treino']['tmp_name'];
+            $fileName = $_FILES['foto_treino']['name'];
+            $fileSize = $_FILES['foto_treino']['size'];
+            $fileNameCmps = explode(".", $fileName);
+            $fileExtension = strtolower(end($fileNameCmps));
+            
+            $allowedfileExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+            if (in_array($fileExtension, $allowedfileExtensions)) {
+                if ($fileSize <= 5 * 1024 * 1024) { // Limite de 5MB
+                    $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+                    $uploadFileDir = __DIR__ . '/../../public/assets/img/';
+                    if (move_uploaded_file($fileTmpPath, $uploadFileDir . $newFileName)) {
+                        $foto_nome = $newFileName;
+                    }
+                }
+            }
+        }
+
+        // 2. Coletar e decodificar os exercícios realizados
+        $exercicios_recebidos = json_decode($_POST['exercicios'] ?? '[]', true);
+        if (empty($exercicios_recebidos)) {
+            // Fallback: se nenhuma série foi marcada, copia do treino original
+            $exercicios_originais = $treinoModel->buscarExercicios($id);
+            foreach ($exercicios_originais as $ex) {
+                $exercicios_recebidos[] = [
+                    'nome_exercicio' => $ex['nome_exercicio'],
+                    'series' => $ex['series'],
+                    'repeticoes' => $ex['repeticoes'],
+                    'peso_kg' => $ex['peso_kg'],
+                    'descanso_segundos' => $ex['descanso_segundos'],
+                    'observacoes' => $ex['observacoes']
+                ];
+            }
+        }
+
+        // 3. Criar o Treino Realizado (Publico = 1) no banco para aparecer no feed
+        $dados_realizado = [
+            'usuario_id' => $usuario_id,
+            'titulo' => 'Realizou o treino: ' . $treino['titulo'],
+            'descricao' => $observacao_usuario ?: 'Mais um treino finalizado com sucesso! 💪',
+            'tipo_treino' => $treino['tipo_treino'],
+            'grupo_muscular' => $treino['grupo_muscular'],
+            'duracao_minutos' => $duracao_minutos,
+            'nivel_dificuldade' => $treino['nivel_dificuldade'],
+            'publico' => 1, // Torna público para ir para o feed
+            'foto' => $foto_nome,
+            'exercicios' => $exercicios_recebidos
+        ];
+
+        try {
+            $novo_treino_id = $treinoModel->criar($dados_realizado);
+        } catch (\Exception $e) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao salvar o treino realizado: ' . $e->getMessage()]);
+            exit();
+        }
+
         // Carrega o usuário para obter a academia vinculada
         $uModel = new UsuarioModel();
         $usuario = $uModel->buscarPorId($usuario_id);
@@ -470,29 +530,25 @@ class TreinoController {
             $obs .= " Nota do atleta: " . $observacao_usuario;
         }
         
-        // Registra o check-in na academia e concede +5 pontos automáticos pelo check-in + conquista
+        // Registra o check-in na academia vinculado ao novo treino público
         $aModel = new AcademiaModel();
-        $sucesso = $aModel->registrarCheckin($usuario_id, $academia_id, $id, $obs);
+        $sucesso = $aModel->registrarCheckin($usuario_id, $academia_id, $novo_treino_id, $obs);
         
         if ($sucesso) {
-            // Recompensa o usuário com +15 pontos adicionais no ranking (por finalizar o treino Hevy completo)
+            // Recompensa o usuário com +15 pontos adicionais no ranking (por finalizar o treino no Tracker)
+            // Somado aos +10 da criação e +5 do checkin = total +30 pontos de evolução
             $uModel->adicionarPontos($usuario_id, 15);
-            
-            // Incrementa o número total de treinos concluídos pelo usuário (total_treinos)
-            $db = \App\Config\Database::getConnection();
-            $stmt = $db->prepare("UPDATE usuarios SET total_treinos = total_treinos + 1 WHERE id = :id");
-            $stmt->execute([':id' => $usuario_id]);
             
             header('Content-Type: application/json');
             echo json_encode([
                 'status' => 'sucesso',
-                'mensagem' => 'Treino concluído! Parabéns pelos ganhos! +20 pontos de evolução adicionados.',
+                'mensagem' => 'Treino concluído e publicado! Parabéns pelos ganhos! +30 pontos de evolução adicionados.',
                 'duracao' => $duracao_minutos
             ]);
             exit();
         } else {
             header('Content-Type: application/json');
-            echo json_encode(['status' => 'erro', 'mensagem' => 'Não foi possível salvar o registro do treino.']);
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Não foi possível registrar o check-in do treino.']);
             exit();
         }
     }

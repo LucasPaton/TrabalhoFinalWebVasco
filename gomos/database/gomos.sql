@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS treinos (
     total_comentarios INT DEFAULT 0,
     total_visualizacoes INT DEFAULT 0,
     publico TINYINT(1) DEFAULT 1, -- 0=privado / 1=público
+    foto VARCHAR(255) DEFAULT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;

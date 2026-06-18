@@ -12,6 +12,16 @@ class TreinoModel {
 
     public function __construct() {
         $this->db = Database::getConnection();
+        // Migração automática para adicionar a coluna 'foto' se ela não existir
+        try {
+            $this->db->query("SELECT foto FROM treinos LIMIT 1");
+        } catch (\PDOException $e) {
+            try {
+                $this->db->exec("ALTER TABLE treinos ADD COLUMN foto VARCHAR(255) DEFAULT NULL");
+            } catch (\Exception $ex) {
+                // Silencia
+            }
+        }
     }
 
     /**
@@ -20,8 +30,8 @@ class TreinoModel {
     public function criar($dados) {
         $this->db->beginTransaction();
         try {
-            $sql = "INSERT INTO treinos (usuario_id, titulo, descricao, tipo_treino, grupo_muscular, duracao_minutos, nivel_dificuldade, publico) 
-                    VALUES (:usuario_id, :titulo, :descricao, :tipo_treino, :grupo_muscular, :duracao_minutos, :nivel_dificuldade, :publico)";
+            $sql = "INSERT INTO treinos (usuario_id, titulo, descricao, tipo_treino, grupo_muscular, duracao_minutos, nivel_dificuldade, publico, foto) 
+                    VALUES (:usuario_id, :titulo, :descricao, :tipo_treino, :grupo_muscular, :duracao_minutos, :nivel_dificuldade, :publico, :foto)";
             
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
@@ -32,7 +42,8 @@ class TreinoModel {
                 ':grupo_muscular' => $dados['grupo_muscular'],
                 ':duracao_minutos' => $dados['duracao_minutos'],
                 ':nivel_dificuldade' => $dados['nivel_dificuldade'],
-                ':publico' => $dados['publico']
+                ':publico' => $dados['publico'],
+                ':foto' => $dados['foto'] ?? null
             ]);
 
             $treino_id = $this->db->lastInsertId();
@@ -42,15 +53,18 @@ class TreinoModel {
                 $this->inserirExercicios($treino_id, $dados['exercicios']);
             }
 
-            // Atualiza total_treinos no perfil do usuário
-            $sql_u = "UPDATE usuarios SET total_treinos = total_treinos + 1, pontos_ranking = pontos_ranking + 10 WHERE id = :usuario_id";
-            $stmt_u = $this->db->prepare($sql_u);
-            $stmt_u->execute([':usuario_id' => $dados['usuario_id']]);
+            // Apenas incrementa estatísticas e prêmios se for treino realizado público (publico = 1)
+            if (isset($dados['publico']) && $dados['publico'] == 1) {
+                // Atualiza total_treinos no perfil do usuário e soma 10 pontos
+                $sql_u = "UPDATE usuarios SET total_treinos = total_treinos + 1, pontos_ranking = pontos_ranking + 10 WHERE id = :usuario_id";
+                $stmt_u = $this->db->prepare($sql_u);
+                $stmt_u->execute([':usuario_id' => $dados['usuario_id']]);
 
-            // Se for treino de Peito, ganha conquista de "Primeiro Supino" (ID 2 na seed)
-            if (stripos($dados['grupo_muscular'], 'peito') !== false) {
-                $uModel = new UsuarioModel();
-                $uModel->desbloquearConquista($dados['usuario_id'], 2);
+                // Se for treino de Peito, ganha conquista de "Primeiro Supino" (ID 2 na seed)
+                if (stripos($dados['grupo_muscular'], 'peito') !== false) {
+                    $uModel = new UsuarioModel();
+                    $uModel->desbloquearConquista($dados['usuario_id'], 2);
+                }
             }
 
             $this->db->commit();
@@ -122,7 +136,7 @@ class TreinoModel {
 
     /**
      * Retorna a lista de posts de treinos para o Feed do usuário.
-     * Inclui treinos próprios e treinos públicos de amigos.
+     * Inclui apenas treinos realizados públicos (publico = 1) do próprio usuário e de seus amigos.
      */
     public function listarFeed($usuario_id) {
         $sql = "SELECT t.*, u.nome as nome_usuario, u.username, u.foto_perfil, u.nivel_fitness,
@@ -131,12 +145,14 @@ class TreinoModel {
                 (SELECT COUNT(*) FROM curtidas WHERE treino_id = t.id AND usuario_id = :usuario_id_curtiu) as curtiu
                 FROM treinos t
                 INNER JOIN usuarios u ON t.usuario_id = u.id
-                WHERE t.usuario_id = :usuario_id_dono
-                   OR (t.publico = 1 AND t.usuario_id IN (
-                       SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id_receptor AND status = 'aceita'
-                       UNION
-                       SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id_solicitante AND status = 'aceita'
-                   ))
+                WHERE t.publico = 1 AND (
+                    t.usuario_id = :usuario_id_dono
+                    OR t.usuario_id IN (
+                        SELECT solicitante_id FROM amizades WHERE receptor_id = :usuario_id_receptor AND status = 'aceita'
+                        UNION
+                        SELECT receptor_id FROM amizades WHERE solicitante_id = :usuario_id_solicitante AND status = 'aceita'
+                    )
+                )
                 ORDER BY t.criado_em DESC";
         
         $stmt = $this->db->prepare($sql);
@@ -150,7 +166,50 @@ class TreinoModel {
     }
 
     /**
+     * Lista as fichas de treino (templates/modelos, publico = 0) de um usuário específico.
+     */
+    public function listarFichasPorUsuario($usuario_id) {
+        $sql = "SELECT t.*, u.nome as nome_usuario, u.username, u.foto_perfil,
+                (SELECT COUNT(*) FROM curtidas WHERE treino_id = t.id) as total_curtidas,
+                (SELECT COUNT(*) FROM comentarios WHERE treino_id = t.id) as total_comentarios
+                FROM treinos t 
+                INNER JOIN usuarios u ON t.usuario_id = u.id 
+                WHERE t.usuario_id = :usuario_id AND t.publico = 0
+                ORDER BY t.criado_em DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':usuario_id' => $usuario_id]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Lista os treinos realizados (publico = 1) de um usuário específico.
+     */
+    public function listarRealizadosPorUsuario($usuario_id, $usuario_logado_id = null) {
+        $sql = "SELECT t.*, u.nome as nome_usuario, u.username, u.foto_perfil,
+                (SELECT COUNT(*) FROM curtidas WHERE treino_id = t.id) as total_curtidas,
+                (SELECT COUNT(*) FROM comentarios WHERE treino_id = t.id) as total_comentarios";
+        
+        if ($usuario_logado_id) {
+            $sql .= ", (SELECT COUNT(*) FROM curtidas WHERE treino_id = t.id AND usuario_id = :logado_id) as curtiu";
+        }
+        
+        $sql .= " FROM treinos t 
+                  INNER JOIN usuarios u ON t.usuario_id = u.id 
+                  WHERE t.usuario_id = :usuario_id AND t.publico = 1
+                  ORDER BY t.criado_em DESC";
+                  
+        $stmt = $this->db->prepare($sql);
+        $params = [':usuario_id' => $usuario_id];
+        if ($usuario_logado_id) {
+            $params[':logado_id'] = $usuario_logado_id;
+        }
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    /**
      * Lista os treinos de um usuário específico.
+     * Mantido para compatibilidade retrógrada.
      */
     public function listarPorUsuario($usuario_id, $incluir_privados = false, $usuario_logado_id = null) {
         $sql = "SELECT t.*, u.nome as nome_usuario, u.username, u.foto_perfil,

@@ -58,9 +58,21 @@ class UsuarioController {
         // 4. Buscar conquistas desbloqueadas
         $conquistas = $usuarioModel->buscarConquistas($usuario_id);
 
-        // 5. Buscar treinos (se for o próprio perfil, traz privados também)
+        // 5. Buscar Fichas (templates) e Treinos Realizados separadamente
         $treinoModel = new TreinoModel();
-        $treinos = $treinoModel->listarPorUsuario($usuario_id, $eh_proprio, $logado_id);
+        
+        $fichas = $treinoModel->listarFichasPorUsuario($usuario_id);
+        foreach ($fichas as &$f) {
+            $f['exercicios'] = $treinoModel->buscarExercicios($f['id']);
+            $f['total_exercicios'] = count($f['exercicios']);
+        }
+        
+        $realizados = $treinoModel->listarRealizadosPorUsuario($usuario_id, $logado_id);
+        foreach ($realizados as &$r) {
+            $r['exercicios_preview'] = $treinoModel->buscarExercicios($r['id']);
+            $r['total_exercicios'] = count($r['exercicios_preview']);
+            $r['exercicios_preview'] = array_slice($r['exercicios_preview'], 0, 3);
+        }
 
         // 6. Buscar solicitações de amizade pendentes (apenas se for o próprio perfil)
         $solicitacoes_pendentes = [];

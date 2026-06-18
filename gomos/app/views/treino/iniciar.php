@@ -269,6 +269,12 @@ require_once __DIR__ . '/../partials/header.php';
                     <label for="obs-finalizacao" class="form-label small text-muted-gomos">Notas ou Observações do Treino (Opcional)</label>
                     <textarea class="form-control form-control-gomos" id="obs-finalizacao" rows="3" placeholder="Ex: Senti-me com excelente energia, aumentei a carga no supino reto."></textarea>
                 </div>
+
+                <!-- Foto do Treino -->
+                <div class="mb-3">
+                    <label for="foto-finalizacao" class="form-label small text-muted-gomos">Anexar Foto do Treino (Opcional)</label>
+                    <input type="file" class="form-control form-control-gomos" id="foto-finalizacao" accept="image/*">
+                </div>
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-outline-gomos border-secondary text-secondary" data-bs-dismiss="modal">VOLTAR</button>
@@ -403,10 +409,41 @@ document.addEventListener('DOMContentLoaded', function() {
         const minutosTotal = Math.max(1, Math.round(tempoSegundos / 60));
         const observacaoText = document.getElementById('obs-finalizacao').value;
 
+        // Coletar exercícios efetivamente concluídos
+        const exerciciosConcluidos = [];
+        document.querySelectorAll('.exercise-tracker-card').forEach((card) => {
+            const nomeExercicio = card.querySelector('h5').innerText.replace(/^\d+\.\s*/, '').trim();
+            const rows = card.querySelectorAll('.serie-row');
+            const checkedRows = Array.from(rows).filter(row => row.querySelector('.btn-check-serie').classList.contains('checked'));
+            
+            if (checkedRows.length > 0) {
+                const seriesCount = checkedRows.length;
+                const repsList = checkedRows.map(row => row.querySelector('.reps-input').value).join(', ');
+                const weights = checkedRows.map(row => parseFloat(row.querySelector('.weight-input').value) || 0);
+                const maxWeight = Math.max(...weights, 0);
+                const descanso = parseInt(card.dataset.descanso) || 60;
+                
+                exerciciosConcluidos.push({
+                    nome_exercicio: nomeExercicio,
+                    series: seriesCount,
+                    repeticoes: repsList,
+                    peso_kg: maxWeight,
+                    descanso_segundos: descanso,
+                    observacoes: ''
+                });
+            }
+        });
+
         // Enviar os dados via POST
         const formData = new FormData();
         formData.append('duracao_minutos', minutosTotal);
         formData.append('observacao', observacaoText);
+        formData.append('exercicios', JSON.stringify(exerciciosConcluidos));
+
+        const fotoInput = document.getElementById('foto-finalizacao');
+        if (fotoInput && fotoInput.files.length > 0) {
+            formData.append('foto_treino', fotoInput.files[0]);
+        }
 
         fetch(rootPath + '/treino/finalizar/' + treinoId, {
             method: 'POST',
