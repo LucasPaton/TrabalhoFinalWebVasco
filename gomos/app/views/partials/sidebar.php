@@ -18,7 +18,12 @@ $uri = $_SERVER['REQUEST_URI'];
         <a href="<?= $rootUrl ?>/feed" class="text-decoration-none">
             <h3 class="m-0 text-white brand-font"><span class="text-orange">G</span>OMOS <i class="fa-solid fa-dumbbell text-orange"></i></h3>
         </a>
-        <button type="button" class="btn-toggle-sidebar" id="btn-toggle-sidebar" title="Recolher Menu">
+        <button type="button" 
+                id="btn-toggle-sidebar" 
+                title="Recolher Menu" 
+                style="background: transparent; border: none; color: rgba(255,255,255,0.6); font-size: 1.25rem; cursor: pointer; padding: 0; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; outline: none; box-shadow: none; border-radius: 50%; width: 36px; height: 36px;"
+                onmouseover="this.style.color='#ff5f00'; this.style.background='rgba(255,255,255,0.05)';"
+                onmouseout="this.style.color='rgba(255,255,255,0.6)'; this.style.background='transparent';">
             <i class="fa-solid fa-chevron-left"></i>
         </button>
     </div>
@@ -243,7 +248,13 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- Botão flutuante para reabrir a sidebar -->
-<button type="button" class="btn-reopen-sidebar" id="btn-reopen-sidebar" title="Expandir Menu">
+<button type="button" 
+        class="btn-reopen-sidebar" 
+        id="btn-reopen-sidebar" 
+        title="Expandir Menu"
+        style="position: fixed; left: 15px; top: 15px; z-index: 1040; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); color: #ff5f00; width: 42px; height: 42px; border-radius: 8px; display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: all 0.2s ease; outline: none;"
+        onmouseover="this.style.background='#ff5f00'; this.style.color='#121212'"
+        onmouseout="this.style.background='#1a1a1a'; this.style.color='#ff5f00'">
     <i class="fa-solid fa-bars"></i>
 </button>
 
