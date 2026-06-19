@@ -7,6 +7,46 @@ O **GOMOS** é uma plataforma social completa desenvolvida em PHP Puro (padrão 
 
 ---
 
+## 🌟 Funcionalidades e Recursos Principais
+
+O GOMOS não é apenas um gerenciador de rotinas, mas um ecossistema integrado com foco em gamificação e compartilhamento social:
+
+### 1. 📋 Minhas Fichas (Templates de Treino)
+* **Rotinas Privadas por Padrão**: As rotinas criadas no construtor de treinos servem como seus templates de treino e ficam guardadas na aba "Minhas Fichas", sem poluir o feed principal.
+* **Cópia de Fichas**: Gostou do treino de algum amigo no feed, na busca ou no perfil dele? Com apenas um clique você pode copiar a ficha completa para a sua biblioteca (salva com o sufixo `(Copiado)`), facilitando o compartilhamento de rotinas.
+
+### 2. ⚡ Workout Tracker (Rastreador de Treinos Ativos)
+* **Execução em Tempo Real**: Inicie qualquer ficha salva para abrir a interface do rastreador de treino.
+* **Cronômetro e Timer de Descanso**: Acompanhe o tempo de treino decorrido. Ao marcar uma série concluída, um temporizador regressivo de descanso é acionado automaticamente e um **bip eletrônico** (Web Audio API) soa para avisar que o descanso acabou.
+* **Inputs Flexíveis**: Registre peso e repetições reais feitas. Suporta entrada de decimais com vírgula local (ex: `12,5 kg`).
+* **Modal Finalizar (Composer)**: Ao clicar em "Finalizar", o modal estilo Twitter calcula a duração exata do treino, a quantidade de séries concluídas e o **Volume Total de Carga (Ton)**. Adicione fotos e comentários para postar no feed.
+
+### 3. 👥 Feed de Treinos & Interação Social
+* **Feed estilo Twitter**: Apenas treinos **efetivamente realizados** aparecem no feed social de treinos dos amigos, mantendo a timeline ativa com treinos reais.
+* **Mídia e Preview**: As publicações exibem fotos reais do treino, notas do atleta e um preview completo da tabela de exercícios com as séries, repetições e cargas reais executadas.
+* **Interações Gamificadas**: Dê curtidas rápidas (com ícone de coração preenchido) e comente nas publicações para interagir com a comunidade.
+
+### 4. 👤 Perfil do Atleta por Abas (Tabs)
+* **Divisão Organizada**: Perfis divididos de forma elegante em duas abas:
+  * **Histórico de Treinos**: Onde ficam todas as publicações de treinos efetivamente realizados por aquele atleta, com fotos e estatísticas.
+  * **Fichas de Treino**: Onde o atleta lista seus templates públicos/privados, permitindo que outros atletas vejam e copiem as fichas.
+
+### 5. 🏆 Sistema de Gamificação & Rankings
+Suba de nível e ganhe destaque na comunidade acumulando pontos de evolução no ranking oficial:
+* **Realizar um Treino**: **+10 pontos** (ao finalizar o treino no tracker).
+* **Ficha Copiada por Outro Atleta**: **+10 pontos** (valoriza criadores de treinos úteis).
+* **Curtida Recebida**: **+3 pontos** (para o dono do post).
+* **Deixar Comentário**: **+1 ponto** (para o comentarista, incentivando interações).
+* **Filtros por Abas**: Visualize a classificação dos melhores atletas em 3 esferas: Nacional (Brasil), Entre Amigos (sua rede de amigos) ou Regional (da mesma Cidade/Estado).
+
+### 6. 📱 Interface Responsiva & Barra Lateral Colapsável
+* **Mobile-First**: Projetado com foco em aparelhos móveis para ser usado diretamente no salão da academia.
+* **Sidebar Inteligente**: No computador, a barra lateral de navegação pode ser recolhida/expandida para aumentar o espaço de visualização das fichas. O estado é persistido no navegador via `localStorage`.
+* **Design Livre de Sobreposições**: As áreas de conteúdo e cabeçalhos possuem espaçamentos dinâmicos que recuam ao colapsar a sidebar ou abrir o menu hambúrguer no celular, garantindo visibilidade limpa das informações.
+* **Busca Global**: Um campo de pesquisa no menu lateral permite buscar treinos e usuários dinamicamente com autocomplete/dropdown de resultados.
+
+---
+
 ## 🎨 Conceito e Identidade Visual
 
 A interface do GOMOS foi projetada para ter um impacto visual premium e moderno, adotando um tema escuro com detalhes vibrantes:
