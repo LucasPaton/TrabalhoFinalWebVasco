@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
         class="btn-reopen-sidebar" 
         id="btn-reopen-sidebar" 
         title="Expandir Menu"
-        style="position: fixed; left: 15px; top: 15px; z-index: 1040; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); color: #ff5f00; width: 42px; height: 42px; border-radius: 8px; display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: all 0.2s ease; outline: none;"
+        style="position: fixed; left: 15px; top: 15px; z-index: 1040; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); color: #ff5f00; width: 42px; height: 42px; border-radius: 8px; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: all 0.2s ease; outline: none;"
         onmouseover="this.style.background='#ff5f00'; this.style.color='#121212'"
         onmouseout="this.style.background='#1a1a1a'; this.style.color='#ff5f00'">
     <i class="fa-solid fa-bars"></i>

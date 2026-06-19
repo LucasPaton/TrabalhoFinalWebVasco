@@ -126,7 +126,7 @@ require_once __DIR__ . '/../partials/header.php';
                             <span class="text-secondary small d-block uppercase" style="letter-spacing: 1px;">Tempo Decorrido</span>
                             <span id="tracker-timer" class="timer-text">00:00:00</span>
                         </div>
-                        <button type="button" class="btn btn-primary-gomos px-4 py-3 fw-bold" id="btn-finalizar-treino">
+                        <button type="button" class="btn btn-primary-gomos px-4 py-3 fw-bold" id="btn-finalizar-treino" data-bs-toggle="modal" data-bs-target="#modalFinalizarTreino">
                             <i class="fa-solid fa-circle-check text-dark me-2"></i> FINALIZAR
                         </button>
                     </div>
@@ -420,34 +420,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 5. Finalizar Treino (Abrir Modal)
-    const btnFinalizar = document.getElementById('btn-finalizar-treino');
-    const modalFinalizar = new bootstrap.Modal(document.getElementById('modalFinalizarTreino'));
-    const modalDuracaoTexto = document.getElementById('modal-duracao-texto');
-    const modalSeriesTexto = document.getElementById('modal-series-texto');
-    const modalVolumeTexto = document.getElementById('modal-volume-texto');
+    // 5. Finalizar Treino (Preenchimento de Estatísticas ao abrir o Modal)
+    const modalEl = document.getElementById('modalFinalizarTreino');
+    if (modalEl) {
+        modalEl.addEventListener('show.bs.modal', function () {
+            const minutosTotal = Math.max(1, Math.round(tempoSegundos / 60));
+            const modalDuracaoTexto = document.getElementById('modal-duracao-texto');
+            if (modalDuracaoTexto) modalDuracaoTexto.textContent = `${minutosTotal}m`;
 
-    btnFinalizar.addEventListener('click', function() {
-        const minutosTotal = Math.max(1, Math.round(tempoSegundos / 60));
-        modalDuracaoTexto.textContent = `${minutosTotal}m`;
+            // Calcular estatísticas das séries concluídas
+            let totalSeries = 0;
+            let volumeTotal = 0;
+            document.querySelectorAll('.serie-row').forEach(row => {
+                const checkBtn = row.querySelector('.btn-check-serie');
+                if (checkBtn && checkBtn.classList.contains('checked')) {
+                    totalSeries++;
+                    const weightInput = row.querySelector('.weight-input');
+                    const repsInput = row.querySelector('.reps-input');
+                    const weightVal = weightInput ? weightInput.value.toString().replace(',', '.') : '0';
+                    const weight = parseFloat(weightVal) || 0;
+                    const reps = repsInput ? (parseInt(repsInput.value) || 0) : 0;
+                    volumeTotal += weight * reps;
+                }
+            });
 
-        // Calcular estatísticas das séries concluídas
-        let totalSeries = 0;
-        let volumeTotal = 0;
-        document.querySelectorAll('.serie-row').forEach(row => {
-            if (row.querySelector('.btn-check-serie').classList.contains('checked')) {
-                totalSeries++;
-                const weight = parseFloat(row.querySelector('.weight-input').value) || 0;
-                const reps = parseInt(row.querySelector('.reps-input').value) || 0;
-                volumeTotal += weight * reps;
-            }
+            const modalSeriesTexto = document.getElementById('modal-series-texto');
+            const modalVolumeTexto = document.getElementById('modal-volume-texto');
+            if (modalSeriesTexto) modalSeriesTexto.textContent = totalSeries;
+            if (modalVolumeTexto) modalVolumeTexto.textContent = `${volumeTotal} kg`;
         });
-
-        modalSeriesTexto.textContent = totalSeries;
-        modalVolumeTexto.textContent = `${volumeTotal} kg`;
-
-        modalFinalizar.show();
-    });
+    }
 
     // 6. Preview da Imagem no Modal
     const fotoInput = document.getElementById('foto-finalizacao');
@@ -455,108 +457,124 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewImg = document.getElementById('image-preview');
     const removePhotoBtn = document.getElementById('btn-remove-photo');
 
-    fotoInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                previewContainer.style.display = 'block';
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(this.files[0]);
             }
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
+        });
+    }
 
-    removePhotoBtn.addEventListener('click', function() {
-        fotoInput.value = '';
-        previewImg.src = '#';
-        previewContainer.style.display = 'none';
-    });
+    if (removePhotoBtn) {
+        removePhotoBtn.addEventListener('click', function() {
+            if (fotoInput) fotoInput.value = '';
+            previewImg.src = '#';
+            previewContainer.style.display = 'none';
+        });
+    }
 
     // 7. Contador de caracteres no Estilo Twitter
     const textComposer = document.getElementById('obs-finalizacao');
     const charCounter = document.getElementById('char-counter');
 
-    textComposer.addEventListener('input', function() {
-        const remaining = 280 - this.value.length;
-        charCounter.textContent = remaining;
-        if (remaining < 20) {
-            charCounter.classList.add('text-danger');
-            charCounter.classList.remove('text-secondary');
-        } else {
-            charCounter.classList.remove('text-danger');
-            charCounter.classList.add('text-secondary');
-        }
-    });
+    if (textComposer && charCounter) {
+        textComposer.addEventListener('input', function() {
+            const remaining = 280 - this.value.length;
+            charCounter.textContent = remaining;
+            if (remaining < 20) {
+                charCounter.classList.add('text-danger');
+                charCounter.classList.remove('text-secondary');
+            } else {
+                charCounter.classList.remove('text-danger');
+                charCounter.classList.add('text-secondary');
+            }
+        });
+    }
 
     // 8. Confirmação do Envio e Gravação no Banco (Ajax)
     const btnSalvarFinalizacao = document.getElementById('btn-salvar-finalizacao');
     const rootPath = window.GOMOS_ROOT || '';
     const treinoId = <?= intval($treino['id']) ?>;
 
-    btnSalvarFinalizacao.addEventListener('click', function() {
-        this.disabled = true;
-        this.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> PUBLICANDO...';
+    if (btnSalvarFinalizacao) {
+        btnSalvarFinalizacao.addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> PUBLICANDO...';
 
-        const minutosTotal = Math.max(1, Math.round(tempoSegundos / 60));
-        const observacaoText = textComposer.value;
+            const minutosTotal = Math.max(1, Math.round(tempoSegundos / 60));
+            const observacaoText = textComposer ? textComposer.value : '';
 
-        // Coletar exercícios efetivamente concluídos
-        const exerciciosConcluidos = [];
-        document.querySelectorAll('.exercise-tracker-card').forEach((card) => {
-            const nomeExercicio = card.querySelector('h5').innerText.replace(/^\d+\.\s*/, '').trim();
-            const rows = card.querySelectorAll('.serie-row');
-            const checkedRows = Array.from(rows).filter(row => row.querySelector('.btn-check-serie').classList.contains('checked'));
-            
-            if (checkedRows.length > 0) {
-                const seriesCount = checkedRows.length;
-                const repsList = checkedRows.map(row => row.querySelector('.reps-input').value).join(', ');
-                const weights = checkedRows.map(row => parseFloat(row.querySelector('.weight-input').value) || 0);
-                const maxWeight = Math.max(...weights, 0);
-                const descanso = parseInt(card.dataset.descanso) || 60;
+            // Coletar exercícios efetivamente concluídos
+            const exerciciosConcluidos = [];
+            document.querySelectorAll('.exercise-tracker-card').forEach((card) => {
+                const nomeExercicio = card.querySelector('h5').innerText.replace(/^\d+\.\s*/, '').trim();
+                const rows = card.querySelectorAll('.serie-row');
+                const checkedRows = Array.from(rows).filter(row => row.querySelector('.btn-check-serie').classList.contains('checked'));
                 
-                exerciciosConcluidos.push({
-                    nome_exercicio: nomeExercicio,
-                    series: seriesCount,
-                    repeticoes: repsList,
-                    peso_kg: maxWeight,
-                    descanso_segundos: descanso,
-                    observacoes: ''
-                });
+                if (checkedRows.length > 0) {
+                    const seriesCount = checkedRows.length;
+                    const repsList = checkedRows.map(row => row.querySelector('.reps-input').value).join(', ');
+                    const weights = checkedRows.map(row => {
+                        const val = row.querySelector('.weight-input').value.toString().replace(',', '.');
+                        return parseFloat(val) || 0;
+                    });
+                    const maxWeight = Math.max(...weights, 0);
+                    const descanso = parseInt(card.dataset.descanso) || 60;
+                    
+                    exerciciosConcluidos.push({
+                        nome_exercicio: nomeExercicio,
+                        series: seriesCount,
+                        repeticoes: repsList,
+                        peso_kg: maxWeight,
+                        descanso_segundos: descanso,
+                        observacoes: ''
+                    });
+                }
+            });
+
+            // Enviar os dados via POST
+            const formData = new FormData();
+            formData.append('duracao_minutos', minutosTotal);
+            formData.append('observacao', observacaoText);
+            formData.append('exercicios', JSON.stringify(exerciciosConcluidos));
+
+            if (fotoInput && fotoInput.files.length > 0) {
+                formData.append('foto_treino', fotoInput.files[0]);
             }
-        });
 
-        // Enviar os dados via POST
-        const formData = new FormData();
-        formData.append('duracao_minutos', minutosTotal);
-        formData.append('observacao', observacaoText);
-        formData.append('exercicios', JSON.stringify(exerciciosConcluidos));
-
-        if (fotoInput && fotoInput.files.length > 0) {
-            formData.append('foto_treino', fotoInput.files[0]);
-        }
-
-        fetch(rootPath + '/treino/finalizar/' + treinoId, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'sucesso') {
-                clearInterval(cronometro);
-                modalFinalizar.hide();
-                window.location.href = rootPath + '/feed';
-            } else {
-                alert(data.mensagem || 'Ocorreu um erro ao finalizar o treino.');
+            fetch(rootPath + '/treino/finalizar/' + treinoId, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'sucesso') {
+                    clearInterval(cronometro);
+                    if (modalEl && typeof bootstrap !== 'undefined') {
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        if (modalInstance) modalInstance.hide();
+                    }
+                    window.location.href = rootPath + '/feed';
+                } else {
+                    alert(data.mensagem || 'Ocorreu um erro ao finalizar o treino.');
+                    btnSalvarFinalizacao.disabled = false;
+                    btnSalvarFinalizacao.innerHTML = '<i class="fa-solid fa-share-nodes"></i> PUBLICAR NO FEED';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro de conexão ao salvar treino.');
                 btnSalvarFinalizacao.disabled = false;
                 btnSalvarFinalizacao.innerHTML = '<i class="fa-solid fa-share-nodes"></i> PUBLICAR NO FEED';
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Erro de conexão ao salvar treino.');
-            btnSalvarFinalizacao.disabled = false;
-            btnSalvarFinalizacao.innerHTML = '<i class="fa-solid fa-share-nodes"></i> PUBLICAR NO FEED';
+            });
         });
-    });
+    }
 });
 </script>
+
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>
