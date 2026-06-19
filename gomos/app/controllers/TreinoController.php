@@ -535,9 +535,7 @@ class TreinoController {
         $sucesso = $aModel->registrarCheckin($usuario_id, $academia_id, $novo_treino_id, $obs);
         
         if ($sucesso) {
-            // Recompensa o usuário com +15 pontos adicionais no ranking (por finalizar o treino no Tracker)
-            // Somado aos +10 da criação e +5 do checkin = total +30 pontos de evolução
-            $uModel->adicionarPontos($usuario_id, 15);
+            // Os pontos (+10) pelo treino concluído já são concedidos na criação do treino público no model.
             
             header('Content-Type: application/json');
             echo json_encode([

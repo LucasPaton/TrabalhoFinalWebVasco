@@ -91,9 +91,8 @@ class AcademiaModel {
         ]);
 
         if ($result) {
-            // Concede +5 pontos de ranking por fazer check-in na academia
+            // Check-ins não concedem mais pontos de evolução diretamente
             $uModel = new UsuarioModel();
-            $uModel->adicionarPontos($usuario_id, 5);
 
             // Verifica conquista de check-in / membro ativo (ID 3 na seed)
             $uModel->desbloquearConquista($usuario_id, 3);

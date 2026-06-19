@@ -26,9 +26,9 @@ $logadoId = \App\Helpers\Session::get('usuario_id');
             <div class="card-gomos p-3 mb-4 bg-dark border-secondary">
                 <h5 class="text-white mb-2"><i class="fa-solid fa-circle-info text-orange"></i> Como acumular pontos e subir de nível:</h5>
                 <div class="row g-2 text-secondary small text-center">
-                    <div class="col-6 col-md-3"><strong>🏋️ Criar Treino:</strong> +10 pts</div>
-                    <div class="col-6 col-md-3"><strong>❤️ Curtida Recebida:</strong> +2 pts</div>
-                    <div class="col-6 col-md-3"><strong>📍 Check-in na Academia:</strong> +5 pts</div>
+                    <div class="col-6 col-md-3"><strong>⚡ Realizar Treino:</strong> +10 pts</div>
+                    <div class="col-6 col-md-3"><strong>📋 Ficha Copiada:</strong> +10 pts</div>
+                    <div class="col-6 col-md-3"><strong>❤️ Curtida Recebida:</strong> +3 pts</div>
                     <div class="col-6 col-md-3"><strong>💬 Deixar Comentário:</strong> +1 pt</div>
                 </div>
             </div>

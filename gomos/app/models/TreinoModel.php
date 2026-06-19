@@ -294,7 +294,7 @@ class TreinoModel {
             // Remover pontos do dono do treino
             if ($owner_id && $owner_id != $usuario_id) {
                 $uModel = new UsuarioModel();
-                $uModel->adicionarPontos($owner_id, -2);
+                $uModel->adicionarPontos($owner_id, -3);
             }
             $acao = 'descurtiu';
         } else {
@@ -303,10 +303,10 @@ class TreinoModel {
             $stmt_ins = $this->db->prepare($sql_ins);
             $stmt_ins->execute([':usuario_id' => $usuario_id, ':treino_id' => $treino_id]);
 
-            // Adicionar pontos (+2) ao dono do treino
+            // Adicionar pontos (+3) ao dono do treino
             if ($owner_id && $owner_id != $usuario_id) {
                 $uModel = new UsuarioModel();
-                $uModel->adicionarPontos($owner_id, 2);
+                $uModel->adicionarPontos($owner_id, 3);
                 
                 // Dar conquista "Atleta Curtido" (ID 5 na seed) se alcançar >= 3 curtidas nesse treino
                 $sql_count = "SELECT COUNT(*) as total FROM curtidas WHERE treino_id = :treino_id";
@@ -420,7 +420,17 @@ class TreinoModel {
             ];
         }
 
-        return $this->criar($dados_novo_treino);
+        $novo_treino_id = $this->criar($dados_novo_treino);
+
+        if ($novo_treino_id) {
+            // Concede +10 pontos ao criador original se o treino for copiado por outro usuário
+            if ($treino['usuario_id'] != $novo_usuario_id) {
+                $uModel = new UsuarioModel();
+                $uModel->adicionarPontos($treino['usuario_id'], 10);
+            }
+        }
+
+        return $novo_treino_id;
     }
 
     /**
