@@ -399,7 +399,7 @@
         transform: translateX(-280px);
     }
     .dashboard-wrapper.sidebar-collapsed .main-content-gomos {
-        margin-left: 0 !important;
+        margin-left: 70px !important; /* Espaço para o botão hambúrguer */
     }
     .dashboard-wrapper.sidebar-collapsed .btn-reopen-sidebar {
         display: flex;
@@ -408,6 +408,7 @@
     .dashboard-wrapper.sidebar-collapsed .tracker-header-fixed {
         left: 0 !important;
         width: 100% !important;
+        padding-left: 70px !important; /* Espaço para o botão hambúrguer no tracker */
     }
 }
 
@@ -449,7 +450,7 @@
 
     .main-content-gomos {
         margin-left: 0 !important;
-        padding: 15px !important;
+        padding: 15px 15px 15px 70px !important; /* Adiciona recuo para o botão hamburguer */
     }
 
     /* Mostrar botão de toggle sempre no mobile */
@@ -479,7 +480,7 @@
     
     /* Ajustes na barra superior do tracker no mobile */
     .tracker-header-fixed {
-        padding: 10px 0 !important;
+        padding: 10px 0 10px 70px !important; /* Adiciona recuo para o botão hamburguer */
     }
     .tracker-header-fixed h3 {
         font-size: 1.25rem !important;

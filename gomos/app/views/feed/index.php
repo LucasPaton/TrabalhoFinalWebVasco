@@ -22,7 +22,7 @@ require_once __DIR__ . '/../partials/header.php';
                             <h2 class="text-white m-0">FEED DE <span class="text-orange">TREINOS</span></h2>
                             <p class="text-secondary m-0">Confira a rotina e cargas de seus amigos.</p>
                         </div>
-                        <a href="<?= $rootUrl ?>/treino/criar" class="btn btn-primary-gomos"><i class="fa-solid fa-plus"></i> NOVO TREINO</a>
+                        <a href="<?= $rootUrl ?>/treinos/fichas" class="btn btn-primary-gomos"><i class="fa-solid fa-circle-play me-1"></i> INICIAR TREINO</a>
                     </div>
 
                     <!-- Listagem de Posts -->
