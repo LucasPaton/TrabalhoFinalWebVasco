@@ -244,41 +244,75 @@ require_once __DIR__ . '/../partials/header.php';
     <button type="button" class="btn btn-close btn-close-white ms-2" id="btn-close-rest-timer" style="font-size: 0.75rem;"></button>
 </div>
 
-<!-- Modal de Confirmação de Finalização -->
+<!-- Modal de Confirmação de Finalização (Estilo Tweet Composer / Hevy) -->
 <div class="modal fade" id="modalFinalizarTreino" tabindex="-1" aria-labelledby="modalFinalizarLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark border-secondary">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title text-white fw-bold" id="modalFinalizarLabel">FINALIZAR E PUBLICAR TREINO</h5>
+        <div class="modal-content bg-dark border-secondary" style="border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div class="modal-header border-secondary py-3">
+                <h5 class="modal-title text-white fw-bold d-flex align-items-center" id="modalFinalizarLabel">
+                    <i class="fa-solid fa-paper-plane text-orange me-2"></i> PUBLICAR TREINO REALIZADO
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body text-secondary">
-                <div class="text-center mb-4">
-                    <i class="fa-solid fa-trophy text-orange" style="font-size: 3.5rem;"></i>
-                    <h4 class="text-white fw-bold mt-2">TREINO CONCLUÍDO!</h4>
-                    <p class="small text-muted-gomos m-0">Parabéns pelo empenho e consistência!</p>
+            <div class="modal-body py-4">
+                <!-- Informações rápidas do treino -->
+                <div class="d-flex align-items-center gap-3 mb-3 bg-black p-3 rounded border border-secondary">
+                    <div class="text-center flex-fill border-end border-secondary">
+                        <span class="text-secondary small d-block uppercase font-monospace" style="font-size: 0.65rem; letter-spacing: 1px;">Duração</span>
+                        <h4 id="modal-duracao-texto" class="text-lime fw-bold m-0" style="font-family: 'Bebas Neue';">0m</h4>
+                    </div>
+                    <div class="text-center flex-fill border-end border-secondary">
+                        <span class="text-secondary small d-block uppercase font-monospace" style="font-size: 0.65rem; letter-spacing: 1px;">Séries Feitas</span>
+                        <h4 id="modal-series-texto" class="text-orange fw-bold m-0" style="font-family: 'Bebas Neue';">0</h4>
+                    </div>
+                    <div class="text-center flex-fill">
+                        <span class="text-secondary small d-block uppercase font-monospace" style="font-size: 0.65rem; letter-spacing: 1px;">Volume Total</span>
+                        <h4 id="modal-volume-texto" class="text-lime fw-bold m-0" style="font-family: 'Bebas Neue';">0 kg</h4>
+                    </div>
                 </div>
 
-                <div class="card bg-black border-secondary p-3 mb-3 text-center">
-                    <span class="text-secondary small uppercase">Duração Total</span>
-                    <h2 id="modal-duracao-texto" class="text-lime fw-bold m-0" style="font-family: 'Bebas Neue';">45 minutos</h2>
+                <!-- Tweet Composer layout -->
+                <div class="d-flex gap-3">
+                    <img src="<?= $root ?>/assets/img/<?= $_SESSION['foto_perfil'] ?? 'default_avatar.png' ?>" alt="Avatar" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover; border: 1.5px solid var(--accent-primary);">
+                    <div class="flex-grow-1">
+                        <div class="fw-bold text-white small mb-1">
+                            <?= htmlspecialchars($_SESSION['nome'] ?? 'Atleta') ?> 
+                            <span class="text-secondary fw-normal">@<?= htmlspecialchars($_SESSION['username'] ?? 'atleta') ?></span>
+                        </div>
+                        <span class="badge bg-secondary text-dark fw-bold mb-2 font-monospace" style="font-size: 0.7rem; background-color: var(--accent-secondary) !important;">
+                            REALIZOU: <?= htmlspecialchars($treino['titulo']) ?>
+                        </span>
+                        
+                        <!-- Textarea do Tweet -->
+                        <textarea class="form-control bg-transparent border-0 text-white p-0" id="obs-finalizacao" rows="3" placeholder="Como foi o treino de hoje? Adicione seus comentários, feedback de cargas ou evolução..." style="resize: none; font-size: 0.95rem; box-shadow: none; min-height: 80px;" maxlength="280"></textarea>
+                    </div>
                 </div>
 
-                <!-- Observação do usuário -->
-                <div class="mb-3">
-                    <label for="obs-finalizacao" class="form-label small text-muted-gomos">Notas ou Observações do Treino (Opcional)</label>
-                    <textarea class="form-control form-control-gomos" id="obs-finalizacao" rows="3" placeholder="Ex: Senti-me com excelente energia, aumentei a carga no supino reto."></textarea>
+                <!-- Preview da imagem selecionada -->
+                <div class="mt-3 position-relative" id="image-preview-container" style="display: none;">
+                    <img id="image-preview" src="#" alt="Preview" class="img-fluid rounded border border-secondary" style="max-height: 200px; width: 100%; object-fit: cover;">
+                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle" id="btn-remove-photo" style="width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; opacity: 0.9;">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
 
-                <!-- Foto do Treino -->
-                <div class="mb-3">
-                    <label for="foto-finalizacao" class="form-label small text-muted-gomos">Anexar Foto do Treino (Opcional)</label>
-                    <input type="file" class="form-control form-control-gomos" id="foto-finalizacao" accept="image/*">
+                <!-- Footer do Composer com botão de mídia -->
+                <div class="d-flex align-items-center justify-content-between mt-3 pt-3 border-top border-secondary">
+                    <div>
+                        <!-- Botão de mídia estilizado -->
+                        <input type="file" id="foto-finalizacao" accept="image/*" style="display: none;">
+                        <button type="button" class="btn btn-outline-secondary btn-sm text-secondary border-secondary d-flex align-items-center gap-1 hover-orange" onclick="document.getElementById('foto-finalizacao').click()" style="border-radius: 20px; font-size: 0.8rem; padding: 6px 14px; transition: all 0.2s ease;">
+                            <i class="fa-solid fa-image text-orange"></i> Adicionar Foto
+                        </button>
+                    </div>
+                    <div class="text-secondary small font-monospace" id="char-counter">280</div>
                 </div>
             </div>
-            <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-outline-gomos border-secondary text-secondary" data-bs-dismiss="modal">VOLTAR</button>
-                <button type="button" class="btn btn-primary-gomos px-4" id="btn-salvar-finalizacao"><i class="fa-solid fa-share-nodes"></i> CONCLUIR E SALVAR</button>
+            <div class="modal-footer border-secondary py-2">
+                <button type="button" class="btn btn-outline-gomos border-secondary text-secondary btn-sm" data-bs-dismiss="modal" style="border-radius: 20px;">CANCELAR</button>
+                <button type="button" class="btn btn-primary-gomos px-4 py-2 fw-bold" id="btn-salvar-finalizacao" style="border-radius: 20px; font-size: 0.9rem;">
+                    <i class="fa-solid fa-share-nodes text-dark me-1"></i> PUBLICAR NO FEED
+                </button>
             </div>
         </div>
     </div>
@@ -390,24 +424,81 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnFinalizar = document.getElementById('btn-finalizar-treino');
     const modalFinalizar = new bootstrap.Modal(document.getElementById('modalFinalizarTreino'));
     const modalDuracaoTexto = document.getElementById('modal-duracao-texto');
+    const modalSeriesTexto = document.getElementById('modal-series-texto');
+    const modalVolumeTexto = document.getElementById('modal-volume-texto');
 
     btnFinalizar.addEventListener('click', function() {
         const minutosTotal = Math.max(1, Math.round(tempoSegundos / 60));
-        modalDuracaoTexto.textContent = `${minutosTotal} minutos`;
+        modalDuracaoTexto.textContent = `${minutosTotal}m`;
+
+        // Calcular estatísticas das séries concluídas
+        let totalSeries = 0;
+        let volumeTotal = 0;
+        document.querySelectorAll('.serie-row').forEach(row => {
+            if (row.querySelector('.btn-check-serie').classList.contains('checked')) {
+                totalSeries++;
+                const weight = parseFloat(row.querySelector('.weight-input').value) || 0;
+                const reps = parseInt(row.querySelector('.reps-input').value) || 0;
+                volumeTotal += weight * reps;
+            }
+        });
+
+        modalSeriesTexto.textContent = totalSeries;
+        modalVolumeTexto.textContent = `${volumeTotal} kg`;
+
         modalFinalizar.show();
     });
 
-    // 6. Confirmação do Envio e Gravação no Banco (Ajax)
+    // 6. Preview da Imagem no Modal
+    const fotoInput = document.getElementById('foto-finalizacao');
+    const previewContainer = document.getElementById('image-preview-container');
+    const previewImg = document.getElementById('image-preview');
+    const removePhotoBtn = document.getElementById('btn-remove-photo');
+
+    fotoInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    removePhotoBtn.addEventListener('click', function() {
+        fotoInput.value = '';
+        previewImg.src = '#';
+        previewContainer.style.display = 'none';
+    });
+
+    // 7. Contador de caracteres no Estilo Twitter
+    const textComposer = document.getElementById('obs-finalizacao');
+    const charCounter = document.getElementById('char-counter');
+
+    textComposer.addEventListener('input', function() {
+        const remaining = 280 - this.value.length;
+        charCounter.textContent = remaining;
+        if (remaining < 20) {
+            charCounter.classList.add('text-danger');
+            charCounter.classList.remove('text-secondary');
+        } else {
+            charCounter.classList.remove('text-danger');
+            charCounter.classList.add('text-secondary');
+        }
+    });
+
+    // 8. Confirmação do Envio e Gravação no Banco (Ajax)
     const btnSalvarFinalizacao = document.getElementById('btn-salvar-finalizacao');
     const rootPath = window.GOMOS_ROOT || '';
     const treinoId = <?= intval($treino['id']) ?>;
 
     btnSalvarFinalizacao.addEventListener('click', function() {
         this.disabled = true;
-        this.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> SALVANDO...';
+        this.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> PUBLICANDO...';
 
         const minutosTotal = Math.max(1, Math.round(tempoSegundos / 60));
-        const observacaoText = document.getElementById('obs-finalizacao').value;
+        const observacaoText = textComposer.value;
 
         // Coletar exercícios efetivamente concluídos
         const exerciciosConcluidos = [];
@@ -440,7 +531,6 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('observacao', observacaoText);
         formData.append('exercicios', JSON.stringify(exerciciosConcluidos));
 
-        const fotoInput = document.getElementById('foto-finalizacao');
         if (fotoInput && fotoInput.files.length > 0) {
             formData.append('foto_treino', fotoInput.files[0]);
         }
@@ -453,23 +543,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.status === 'sucesso') {
                 clearInterval(cronometro);
-                
-                // Mostrar animação de parabéns (confetes simulados rápidos no alert do Toast)
                 modalFinalizar.hide();
-                
-                // Redireciona o usuário para o feed
                 window.location.href = rootPath + '/feed';
             } else {
                 alert(data.mensagem || 'Ocorreu um erro ao finalizar o treino.');
-                this.disabled = false;
-                this.innerHTML = '<i class="fa-solid fa-share-nodes"></i> CONCLUIR E SALVAR';
+                btnSalvarFinalizacao.disabled = false;
+                btnSalvarFinalizacao.innerHTML = '<i class="fa-solid fa-share-nodes"></i> PUBLICAR NO FEED';
             }
         })
         .catch(err => {
             console.error(err);
             alert('Erro de conexão ao salvar treino.');
-            this.disabled = false;
-            this.innerHTML = '<i class="fa-solid fa-share-nodes"></i> CONCLUIR E SALVAR';
+            btnSalvarFinalizacao.disabled = false;
+            btnSalvarFinalizacao.innerHTML = '<i class="fa-solid fa-share-nodes"></i> PUBLICAR NO FEED';
         });
     });
 });
