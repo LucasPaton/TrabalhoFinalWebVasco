@@ -51,7 +51,8 @@ $uri = $_SERVER['REQUEST_URI'];
                    id="busca-treinos-input" 
                    class="search-users-input" 
                    placeholder="Buscar treinos..." 
-                   autocomplete="off">
+                   autocomplete="off"
+                   style="padding-left: 42px !important;">
             <div id="busca-treinos-resultados" class="search-results-dropdown"></div>
         </div>
     </div>

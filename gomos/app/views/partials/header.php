@@ -23,13 +23,13 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
     <!-- Estilo Global -->
-    <link rel="stylesheet" href="<?= str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])) ?>/assets/css/style.css">
+    <link rel="stylesheet" href="<?= str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])) ?>/assets/css/style.css?v=<?= time() ?>">
 
     <!-- Estilos específicos baseado na página -->
     <?php if (isset($isLanding) && $isLanding): ?>
-        <link rel="stylesheet" href="<?= str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])) ?>/assets/css/landing.css">
+        <link rel="stylesheet" href="<?= str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])) ?>/assets/css/landing.css?v=<?= time() ?>">
     <?php else: ?>
-        <link rel="stylesheet" href="<?= str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])) ?>/assets/css/dashboard.css">
+        <link rel="stylesheet" href="<?= str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])) ?>/assets/css/dashboard.css?v=<?= time() ?>">
     <?php endif; ?>
 
     <!-- Definir raiz do projeto dinamicamente para scripts JS -->
